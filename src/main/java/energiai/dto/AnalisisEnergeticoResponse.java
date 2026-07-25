@@ -1,29 +1,31 @@
 package energiai.dto;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.List;
 
+@Entity
+@Table (name = "analisis_energetico_response")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode (of = "id")
 public class AnalisisEnergeticoResponse {
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long id;
     private String categoria;
     private double probabilidad;
+    @ElementCollection
+    @CollectionTable(
+            name = "analisis_recomendaciones",
+            joinColumns = @JoinColumn(name = "analisis_response_id")
+    )
+    @Column(name = "recomendacion")
     private List<String> recomendaciones;
     private double costo_estimado_mensual;
-
-    // Constructor vacío
-    public AnalisisEnergeticoResponse() {}
-
-    // --- GETTERS Y SETTERS ---
-
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
-
-    public double getProbabilidad() { return probabilidad; }
-    public void setProbabilidad(double probabilidad) { this.probabilidad = probabilidad; }
-
-    public List<String> getRecomendaciones() { return recomendaciones; }
-    public void setRecomendaciones(List<String> recomendaciones) { this.recomendaciones = recomendaciones; }
-
-    public double getCosto_estimado_mensual() { return costo_estimado_mensual; }
-    public void setCosto_estimado_mensual(double costo_estimado_mensual) { this.costo_estimado_mensual = costo_estimado_mensual; }
-
-
+    @OneToOne(mappedBy = "analisisRespuesta")
+    private AnalisisEnergeticoRequest analisisPeticion;
 }
