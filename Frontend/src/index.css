@@ -1,0 +1,356 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
+/* ==========================================================================
+   DESIGN SYSTEM: ENERGI AI (Eco-Minimalism + Corporate Modern + High Contrast)
+   ========================================================================== */
+
+/* Variables - Mode Claro (Default Luminous SaaS) */
+:root, [data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f5f9;
+  --bg-elevated: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  
+  --border-color: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-hover: #cbd5e1;
+  --border-focus: #10b981;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-on-primary: #ffffff;
+
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0284c7;
+
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+
+  --color-rose-500: #f43f5e;
+  --color-rose-600: #e11d48;
+
+  --badge-success-bg: #ecfdf5;
+  --badge-success-text: #047857;
+  --badge-success-border: #a7f3d0;
+
+  --badge-warning-bg: #fffbeb;
+  --badge-warning-text: #b45309;
+  --badge-warning-border: #fde68a;
+
+  --badge-error-bg: #fef2f2;
+  --badge-error-text: #be123c;
+  --badge-error-border: #fecdd3;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+  
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+/* Variables - Mode Oscuro (Sleek Obsidian SaaS) */
+[data-theme="dark"] {
+  --bg-primary: #0b0f19;
+  --bg-secondary: #111827;
+  --bg-surface: rgba(22, 30, 46, 0.75);
+  --bg-surface-hover: rgba(30, 41, 59, 0.85);
+  --bg-elevated: #1e293b;
+  --bg-glass: rgba(17, 24, 39, 0.85);
+  
+  --border-color: rgba(255, 255, 255, 0.09);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-hover: rgba(255, 255, 255, 0.18);
+  --border-focus: #10b981;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --text-on-primary: #0b0f19;
+
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #34d399;
+  --color-emerald-700: #6ee7b7;
+
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #38bdf8;
+
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #fbbf24;
+
+  --color-rose-500: #f43f5e;
+  --color-rose-600: #fb7185;
+
+  --badge-success-bg: rgba(16, 185, 129, 0.15);
+  --badge-success-text: #34d399;
+  --badge-success-border: rgba(16, 185, 129, 0.3);
+
+  --badge-warning-bg: rgba(245, 158, 11, 0.15);
+  --badge-warning-text: #fbbf24;
+  --badge-warning-border: rgba(245, 158, 11, 0.3);
+
+  --badge-error-bg: rgba(244, 63, 94, 0.15);
+  --badge-error-text: #fb7185;
+  --badge-error-border: rgba(244, 63, 94, 0.3);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.7);
+}
+
+/* Reset y Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.5;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  overflow-x: hidden;
+}
+
+/* Tipografía Consistente */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.font-mono, .metric-value, .kpi-number, code, pre, .mono-data {
+  font-family: var(--font-mono);
+  letter-spacing: -0.03em;
+}
+
+/* Componentes Tarjeta & Paneles SaaS */
+.saas-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.saas-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Gradiante de Texto Corporativo */
+.gradient-heading {
+  background: linear-gradient(135deg, var(--color-emerald-600) 0%, var(--color-cyan-500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Botones con bordes suaves de 12px */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  outline: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--color-emerald-600);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--color-emerald-500);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+/* Badges de Estado */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.badge-efficient {
+  background: var(--badge-success-bg);
+  color: var(--badge-success-text);
+  border: 1px solid var(--badge-success-border);
+}
+
+.badge-moderate {
+  background: var(--badge-warning-bg);
+  color: var(--badge-warning-text);
+  border: 1px solid var(--badge-warning-border);
+}
+
+.badge-inefficient {
+  background: var(--badge-error-bg);
+  color: var(--badge-error-text);
+  border: 1px solid var(--badge-error-border);
+}
+
+/* Inputs Formulario */
+.saas-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.saas-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* Skeleton Loading Shimmer */
+@keyframes skeletonLoading {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-surface-hover) 0px, var(--bg-primary) 50px, var(--bg-surface-hover) 100px);
+  background-size: 200px 100%;
+  animation: skeletonLoading 1.5s infinite ease-in-out;
+  border-radius: var(--radius-sm);
+}
+
+/* Scrollbar Personalizado */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ==========================================================================
+   RESPONSIVE & UNCROPPED HERO IMAGE DESIGN
+   ========================================================================== */
+
+.hero-img-box {
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-img-box img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 2.8rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.1rem !important;
+  }
+  .hero-subtitle {
+    font-size: 1rem !important;
+  }
+  .nav-links-desktop {
+    display: none !important;
+  }
+  .saas-card {
+    padding: 16px !important;
+  }
+  .hero-overlay-badge {
+    position: relative !important;
+    right: auto !important;
+    bottom: auto !important;
+    max-width: 100% !important;
+    margin: 16px auto 0 !important;
+  }
+  .btn-group-responsive {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .btn-group-responsive .btn {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.7rem !important;
+  }
+  .btn {
+    width: 100% !important;
+    padding: 12px 14px !important;
+  }
+}
