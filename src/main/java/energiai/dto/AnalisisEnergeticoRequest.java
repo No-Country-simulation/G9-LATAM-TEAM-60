@@ -23,4 +23,19 @@ public class AnalisisEnergeticoRequest {
     @OneToOne (cascade = CascadeType.ALL)
     @JoinColumn(name = "analisis_respuesta_id", referencedColumnName = "id")
     private AnalisisEnergeticoResponse analisisRespuesta;
+
+    // Constructor para el POST de AnalisisController
+    public AnalisisEnergeticoRequest(AnalisisEnergeticoRequest request, AnalisisEnergeticoResponse response) {
+        this.region = request.getRegion();
+        this.consumo_kwh = request.getConsumo_kwh();
+        this.uso_horario_pico = request.getUso_horario_pico();
+        this.cantidad_equipos = request.getCantidad_equipos();
+        this.tipo_inmueble = request.getTipo_inmueble();
+        this.horas_alto_consumo = request.getHoras_alto_consumo();
+        this.analisisRespuesta = response;
+    }
+
+    private boolean getUso_horario_pico() {
+        return this.uso_horario_pico;
+    }
 }
