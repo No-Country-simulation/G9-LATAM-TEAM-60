@@ -1,21 +1,19 @@
-import joblib
 import os
-
-# Ruta hacia el archivo del modelo en la raíz de energiai-ai-service/
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "modelo_energiai.pkl")
+import joblib
 
 class ModelLoader:
     def __init__(self):
-        self.model = None
+        self.model = self._load_model()
 
-    def load_model(self):
-        """Carga el modelo serializado .pkl en memoria al iniciar la API."""
-        if not os.path.exists(MODEL_PATH):
-            raise FileNotFoundError(f"No se encontró el archivo del modelo en: {MODEL_PATH}")
+    def _load_model(self):
+        """Carga el modelo serializado .pkl usando una ruta absoluta."""
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        model_path = os.path.join(base_dir, "modelo_energiai.pkl")
         
-        self.model = joblib.load(MODEL_PATH)
-        print("✅ Modelo Machine Learning cargado correctamente en memoria.")
-        return self.model
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"No se encontró el archivo del modelo en la ruta: {model_path}")
+            
+        return joblib.load(model_path)
 
-# Instancia global del cargador
+# Instancia global para ser importada en main.py
 model_loader = ModelLoader()
