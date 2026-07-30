@@ -15,6 +15,7 @@ export interface AnalisisResponse {
   costo_estimado_mensual: number;
   recomendaciones: string[];
   fecha?: string;
+  request?: AnalisisRequest;
 }
 
 export interface DashboardStats {

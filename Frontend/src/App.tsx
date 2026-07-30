@@ -19,6 +19,7 @@ const AppContent: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
   const [activeTab, setActiveTab] = useState('simulador');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [currentResult, setCurrentResult] = useState<AnalisisResponse | null>(null);
 
@@ -60,12 +61,14 @@ const AppContent: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      {/* Sidebar Colapsable con Bloqueo para Modo Prueba */}
+      {/* Sidebar Colapsable con Drawer Flotante en Móviles */}
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={handleTabChange} 
         collapsed={sidebarCollapsed} 
         setCollapsed={setSidebarCollapsed}
+        mobileOpen={mobileMenuOpen}
+        setMobileOpen={setMobileMenuOpen}
         onOpenAuth={() => setAuthOpen(true)}
       />
 
@@ -74,7 +77,8 @@ const AppContent: React.FC = () => {
         <Navbar 
           activeTab={activeTab} 
           onOpenAuth={() => setAuthOpen(true)} 
-          onGoLanding={() => setIsLanding(true)} 
+          onGoLanding={() => setIsLanding(true)}
+          onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
         />
 
         {/* Banner de Modo Prueba cuando no hay usuario logueado */}
@@ -83,20 +87,21 @@ const AppContent: React.FC = () => {
             background: 'var(--badge-warning-bg)',
             borderBottom: '1px solid var(--badge-warning-border)',
             color: 'var(--badge-warning-text)',
-            padding: '10px 24px',
+            padding: '10px 20px',
             fontSize: '0.85rem',
             fontWeight: 600,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '12px'
+            gap: '12px',
+            flexWrap: 'wrap'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Lock size={16} />
-              <span>Estás navegando en <strong>Modo Prueba (Guest)</strong>. Inicia sesión o utiliza el botón Demo para habilitar el Dashboard, Historial y Configuración.</span>
+              <span>Estás navegando en <strong>Modo Prueba (Guest)</strong>. Regístrate o inicia sesión para habilitar el Dashboard, Historial y Configuración.</span>
             </div>
             <button onClick={() => setAuthOpen(true)} className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>
-              Iniciar Sesión
+              Iniciar Sesión / Registro
             </button>
           </div>
         )}
@@ -107,7 +112,7 @@ const AppContent: React.FC = () => {
           )}
 
           {activeTab === 'simulador' && (
-            <div style={{ padding: '32px 24px' }}>
+            <div className="view-container">
               <SimulationForm onSimulationComplete={(res) => setCurrentResult(res)} />
             </div>
           )}
@@ -117,7 +122,7 @@ const AppContent: React.FC = () => {
           )}
 
           {activeTab === 'recomendaciones' && user && (
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
+            <div className="view-container">
               <div className="saas-card">
                 <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Lightbulb color="var(--color-amber-500)" /> Recomendaciones & Planes de Eficiencia
@@ -125,7 +130,7 @@ const AppContent: React.FC = () => {
                 <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '24px' }}>
                   Generación automatizada de directivas de ahorro basadas en tu perfil de consumo y las inferencias del modelo de Machine Learning.
                 </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
                   <div style={{ padding: '20px', borderRadius: '12px', background: 'var(--bg-primary)', border: '1px solid var(--border-color)' }}>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-emerald-600)', marginBottom: '8px' }}>1. Desplazamiento Horario (Peak Shaving)</h3>
                     <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
@@ -144,7 +149,7 @@ const AppContent: React.FC = () => {
           )}
 
           {activeTab === 'configuracion' && user && (
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
+            <div className="view-container">
               <div className="saas-card">
                 <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <SettingsIcon color="var(--color-cyan-500)" /> Configuración & Tarifa Base

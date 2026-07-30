@@ -138,8 +138,11 @@ export const apiService = {
         role: data.role || 'USER',
         jwtToken: data.jwtToken
       };
-    } catch (err) {
-      console.warn('Usando login demo local offline:', err);
+    } catch (err: any) {
+      if (err.message === 'Credenciales incorrectas' || err.message?.includes('403') || err.message?.includes('401')) {
+        throw err;
+      }
+      console.warn('Usando login demo local offline (Servidor fuera de linea):', err);
       const isAdm = username.toLowerCase().includes('admin');
       const token = 'demo_offline_jwt_' + Math.random().toString(36).substring(2);
       localStorage.setItem('energiai_jwt', token);
@@ -160,19 +163,23 @@ export const apiService = {
         body: JSON.stringify(data)
       });
       if (!response.ok) {
-        throw new Error('Error al registrar usuario');
+        const errText = await response.text();
+        throw new Error(errText || 'Error al registrar usuario');
       }
       const resData = await response.json();
       if (resData.jwtToken) {
         localStorage.setItem('energiai_jwt', resData.jwtToken);
       }
       return {
-        username: resData.username,
+        username: resData.username || data.username,
         nombreCompleto: resData.nombreCompleto || data.nombreCompleto,
         role: resData.role || 'USER',
         jwtToken: resData.jwtToken
       };
-    } catch (err) {
+    } catch (err: any) {
+      if (err.message && !err.message.includes('Failed to fetch')) {
+        throw err;
+      }
       console.warn('Registro local demo offline:', err);
       const token = 'demo_offline_jwt_' + Math.random().toString(36).substring(2);
       localStorage.setItem('energiai_jwt', token);

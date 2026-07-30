@@ -61,14 +61,14 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
   };
 
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '1240px', margin: '0 auto 60px', padding: '32px 24px' }}>
+    <div className="view-container animate-fade-in">
       {/* Encabezado Dashboard */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Activity color="var(--color-emerald-500)" /> Dashboard Analítico Principal
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Monitoreo en tiempo real de eficiencia energética, distribución ML e indicadores de ahorro.
           </p>
         </div>
@@ -77,14 +77,14 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
         </button>
       </div>
 
-      {/* Tarjetas KPI con JetBrains Mono */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+      {/* Tarjetas KPI Responsivas */}
+      <div className="dashboard-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '28px' }}>
         <div className="saas-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Total Análisis</span>
             <Users size={18} color="var(--color-cyan-500)" />
           </div>
-          <div className="kpi-number" style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>{stats.totalConsultas}</div>
+          <div className="kpi-number" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>{stats.totalConsultas}</div>
           <div style={{ fontSize: '0.75rem', color: 'var(--color-emerald-500)', fontWeight: 600, marginTop: '4px' }}>Inferencia Scikit-Learn</div>
         </div>
 
@@ -93,8 +93,8 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Consumo Promedio</span>
             <Zap size={18} color="var(--color-emerald-500)" />
           </div>
-          <div className="kpi-number" style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            {stats.consumoPromedioKwh} <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-muted)' }}>kWh</span>
+          <div className="kpi-number" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+            {stats.consumoPromedioKwh} <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-muted)' }}>kWh</span>
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--color-emerald-500)', fontWeight: 600, marginTop: '4px' }}>Rango residencial normal</div>
         </div>
@@ -104,7 +104,7 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Gasto Mensual Total</span>
             <DollarSign size={18} color="var(--color-amber-500)" />
           </div>
-          <div className="kpi-number" style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+          <div className="kpi-number" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
             R$ {stats.costoTotalEstimado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--color-amber-500)', fontWeight: 600, marginTop: '4px' }}>Tarifa R$ 0.75 / kWh</div>
@@ -115,20 +115,20 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precisión Modelo ML</span>
             <TrendingUp size={18} color="#818cf8" />
           </div>
-          <div className="kpi-number" style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>93.4%</div>
+          <div className="kpi-number" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>93.4%</div>
           <div style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 600, marginTop: '4px' }}>Regresión Logística</div>
         </div>
       </div>
 
       {/* Secciones Gráficas & Resumen */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+      <div className="dashboard-grid-dual" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '28px' }}>
         
         {/* Gráfico Recharts */}
-        <div className="saas-card" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px' }}>
+        <div className="saas-card" style={{ padding: '20px' }}>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '16px' }}>
             📊 Categorización Energética
           </h3>
-          <div style={{ height: '260px', width: '100%' }}>
+          <div style={{ height: '240px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
                 <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} />
@@ -147,8 +147,8 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
         </div>
 
         {/* Indicadores de Ahorro y Recomendaciones Inteligentes */}
-        <div className="saas-card" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '16px' }}>
+        <div className="saas-card" style={{ padding: '20px' }}>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '16px' }}>
             💡 Recomendaciones Inteligentes de IA
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -173,11 +173,11 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
       </div>
 
       {/* Tabla de Diagnósticos Recientes con JetBrains Mono */}
-      <div className="saas-card" style={{ padding: '24px' }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px' }}>
+      <div className="saas-card" style={{ padding: '20px' }}>
+        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '16px' }}>
           🕒 Registros Energéticos Recientes
         </h3>
-        <div style={{ overflowX: 'auto' }}>
+        <div className="table-responsive">
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase' }}>

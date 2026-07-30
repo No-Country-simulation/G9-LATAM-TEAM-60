@@ -4,23 +4,23 @@
    DESIGN SYSTEM: ENERGI AI (Eco-Minimalism + Corporate Modern + High Contrast)
    ========================================================================== */
 
-/* Variables - Mode Claro (Default Luminous SaaS) */
+/* Variables - Modo Claro Pastel Eye-Care (Suave, Cero Deslumbramiento) */
 :root, [data-theme="light"] {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-surface: #ffffff;
-  --bg-surface-hover: #f1f5f9;
-  --bg-elevated: #ffffff;
-  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-primary: #edf2f0;        /* Pastel menta-crema suave para el fondo general */
+  --bg-secondary: #f6f9f7;      /* Pastel mate para el Menú Lateral y Barra Superior */
+  --bg-surface: #f3f7f5;        /* Tarjetas y módulos en tono pastel mate descansado */
+  --bg-surface-hover: #e2ede8;  /* Estado Hover muy suave */
+  --bg-elevated: #ebf3ef;       /* Modales y elementos elevados */
+  --bg-glass: rgba(246, 249, 247, 0.92);
   
-  --border-color: #e2e8f0;
-  --border-subtle: #f1f5f9;
-  --border-hover: #cbd5e1;
+  --border-color: #cbdad3;       /* Bordes integrados pastel */
+  --border-subtle: #e2ede8;
+  --border-hover: #b2c9bf;
   --border-focus: #10b981;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #0f172a;       /* Texto oscuro de alto contraste y legibilidad */
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   --text-on-primary: #ffffff;
 
   --color-emerald-500: #10b981;
@@ -288,7 +288,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   RESPONSIVE & UNCROPPED HERO IMAGE DESIGN
+   RESPONSIVE & UNCROPPED HERO IMAGE DESIGN & ADAPTIVE LAYOUTS
    ========================================================================== */
 
 .hero-img-box {
@@ -310,24 +310,65 @@ h1, h2, h3, h4, h5, h6 {
   display: block;
 }
 
+/* Envoltorio Responsivo para Tablas */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+/* Contenedores Responsivos */
+.view-container {
+  max-width: 1240px;
+  margin: 0 auto 60px;
+  padding: 32px 24px;
+}
+
+/* Media Queries Breakpoints */
+
+/* Laptops y Tablets Horizontales (<= 1024px) */
 @media (max-width: 1024px) {
+  .view-container {
+    padding: 24px 16px !important;
+  }
   .hero-title {
-    font-size: 2.8rem !important;
+    font-size: 2.5rem !important;
+  }
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .dashboard-grid-dual {
+    grid-template-columns: 1fr !important;
   }
 }
 
+/* Tablets (<= 768px) */
 @media (max-width: 768px) {
   .hero-title {
-    font-size: 2.1rem !important;
+    font-size: 2rem !important;
   }
   .hero-subtitle {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
   }
   .nav-links-desktop {
     display: none !important;
   }
   .saas-card {
     padding: 16px !important;
+    border-radius: var(--radius-sm) !important;
+  }
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .kpi-number {
+    font-size: 1.6rem !important;
   }
   .hero-overlay-badge {
     position: relative !important;
@@ -343,14 +384,86 @@ h1, h2, h3, h4, h5, h6 {
   .btn-group-responsive .btn {
     width: 100% !important;
   }
+  aside {
+    width: 68px !important;
+    padding: 16px 8px !important;
+  }
 }
 
+/* Smartphones y Pantallas Pequeñas (<= 480px) */
 @media (max-width: 480px) {
+  .view-container {
+    padding: 16px 12px !important;
+  }
   .hero-title {
-    font-size: 1.7rem !important;
+    font-size: 1.6rem !important;
+  }
+  .dashboard-kpi-grid {
+    grid-template-columns: 1fr !important;
   }
   .btn {
     width: 100% !important;
-    padding: 12px 14px !important;
+    padding: 10px 14px !important;
+    font-size: 0.85rem !important;
+  }
+  h2 {
+    font-size: 1.3rem !important;
+  }
+  .badge {
+    padding: 2px 8px !important;
+    font-size: 0.7rem !important;
+  }
+}
+
+/* Sidebar Responsiva: Drawer Flotante en Móviles (<= 768px) */
+@media (max-width: 768px) {
+  .saas-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    width: 260px !important;
+    z-index: 95 !important;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .saas-sidebar.mobile-drawer-open {
+    transform: translateX(0) !important;
+  }
+
+  .desktop-only-toggle {
+    display: none !important;
+  }
+
+  .mobile-only-close {
+    display: flex !important;
+  }
+
+  .mobile-hamburger-btn {
+    display: flex !important;
+  }
+
+  .nav-search-container {
+    display: none !important;
+  }
+
+  .nav-bell-btn {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only-close {
+    display: none !important;
+  }
+
+  .mobile-hamburger-btn {
+    display: none !important;
+  }
+
+  .desktop-only-toggle {
+    display: flex !important;
   }
 }

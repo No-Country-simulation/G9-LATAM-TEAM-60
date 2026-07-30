@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Sparkles, User, Lock, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { X, User, Lock, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
@@ -9,7 +9,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const { login, register, loginDemo } = useAuth();
+  const { login, register } = useAuth();
   const { showToast } = useToast();
   const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState('');
@@ -41,13 +41,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDemo = async (isAdmin: boolean) => {
-    setError('');
-    await loginDemo(isAdmin);
-    showToast(isAdmin ? 'Sesión iniciada como Administrador Demo' : 'Sesión iniciada como Usuario Demo', 'success');
-    onClose();
   };
 
   return (
@@ -91,20 +84,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <X size={18} />
         </button>
 
-        {/* Acceso Rápido Demo Hackathon */}
-        <div style={{ background: 'var(--badge-success-bg)', padding: '14px', borderRadius: '12px', border: '1px dashed var(--badge-success-border)', marginBottom: '24px', textAlign: 'center' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--badge-success-text)', textTransform: 'uppercase', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <Sparkles size={14} /> Acceso Rápido Evaluadores (1 Clic)
-          </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button type="button" onClick={() => handleDemo(false)} className="btn btn-primary" style={{ flex: 1, padding: '8px', fontSize: '0.8rem' }}>
-              👤 Usuario Demo
-            </button>
-            <button type="button" onClick={() => handleDemo(true)} className="btn btn-secondary" style={{ flex: 1, padding: '8px', fontSize: '0.8rem' }}>
-              🛡️ Admin Mode
-            </button>
-          </div>
-        </div>
 
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800 }}>
