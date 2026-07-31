@@ -26,7 +26,7 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
     { id: 'Industria', label: 'Nave Industrial', icon: Factory },
   ];
 
-  const regiones = ['Centro', 'Norte', 'Sur', 'Este', 'Oeste'];
+
 
   const handleSimulate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,23 +163,33 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
         </div>
 
         {/* Región y Horario Pico */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px', marginBottom: '32px', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '32px', alignItems: 'center' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
-              Región Geográfica LATAM
+              Zona Climática / Región (Chile & Argentina)
             </label>
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              {regiones.map((r) => (
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {[
+                { id: 'Norte', label: 'Zona Norte (Atacama / NOA-NEA)' },
+                { id: 'Centro', label: 'Zona Centro (Stgo / B. Aires)' },
+                { id: 'Sur', label: 'Zona Sur (Patagonia / Austral)' }
+              ].map((r) => (
                 <button
-                  key={r}
+                  key={r.id}
                   type="button"
-                  onClick={() => setRegion(r)}
-                  className={`btn ${region === r ? 'btn-primary' : 'btn-secondary'}`}
-                  style={{ padding: '6px 14px', fontSize: '0.8rem' }}
+                  onClick={() => setRegion(r.id)}
+                  className={`btn ${region === r.id ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ padding: '8px 14px', fontSize: '0.8rem', flex: '1 1 120px' }}
+                  title={r.label}
                 >
-                  {r}
+                  {r.id === 'Norte' ? '🌵 Norte' : r.id === 'Centro' ? '🏙️ Centro' : '❄️ Sur'}
                 </button>
               ))}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+              {region === 'Norte' && 'Región Norte: Clima árido/cálido con alta demanda de refrigeración.'}
+              {region === 'Centro' && 'Región Centro: Clima templado (Santiago, Mendoza, Buenos Aires).'}
+              {region === 'Sur' && 'Región Sur: Clima frío/patagónico con mayor consumo de calefacción.'}
             </div>
           </div>
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Bell, Sun, Moon, LogIn, ChevronRight, User, Menu } from 'lucide-react';
+import React from 'react';
+import { Bell, Sun, Moon, LogIn, ChevronRight, User, Menu } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -15,7 +15,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onOpenAuth, onGoLandi
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [search, setSearch] = useState('');
 
   const getBreadcrumbLabel = (tab: string) => {
     switch (tab) {
@@ -61,21 +60,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onOpenAuth, onGoLandi
           <span style={{ color: 'var(--text-primary)', fontWeight: 700, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
             {getBreadcrumbLabel(activeTab)}
           </span>
-        </div>
-      </div>
-
-      {/* Centro: Búsqueda Global (Oculta o Colapsada en Móviles Pequeños) */}
-      <div className="nav-search-container" style={{ flex: 1, maxWidth: '380px', margin: '0 12px' }}>
-        <div style={{ position: 'relative' }}>
-          <Search size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-          <input
-            type="text"
-            placeholder="Búsqueda global (parámetros, ID, kWh)..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="saas-input"
-            style={{ paddingLeft: '38px', fontSize: '0.85rem', height: '38px' }}
-          />
         </div>
       </div>
 

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Zap, ArrowRight, CheckCircle2, ShieldCheck, DollarSign, Leaf, Cpu, Sun, Moon, ChevronDown, ChevronUp, Globe, Sparkles, BarChart2, Server, Sliders, Menu, X } from 'lucide-react';
+import { Zap, ArrowRight, CheckCircle2, DollarSign, Leaf, Cpu, Sun, Moon, ChevronDown, ChevronUp, Globe, Sparkles, BarChart2, Server, Sliders, Menu, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
-import { useAuth } from '../context/AuthContext';
 import heroPreviewImg from '../assets/hero_preview_full.png';
 import ecoIllustrationImg from '../assets/eco_illustration.png';
 import aiDiagramImg from '../assets/ai_diagram.png';
@@ -13,7 +12,6 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onOpenAuth }) => {
   const { theme, toggleTheme } = useTheme();
-  const { loginDemo } = useAuth();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [previewKwh, setPreviewKwh] = useState(280);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -89,10 +87,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
             {theme === 'light' ? <Moon size={18} color="var(--text-secondary)" /> : <Sun size={18} color="#f59e0b" />}
           </button>
 
-          <button onClick={() => loginDemo(false)} className="btn btn-secondary nav-links-desktop" style={{ padding: '8px 14px', fontSize: '0.85rem' }}>
-            ⚡ Demo 1 Clic
-          </button>
-
           <button onClick={onOpenAuth} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
             Iniciar Sesión
           </button>
@@ -117,9 +111,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
           <a href="#beneficios" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Beneficios</a>
           <a href="#tecnologias" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Tecnología</a>
           <a href="#faq" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>FAQ</a>
-          <button onClick={() => { setMobileMenuOpen(false); loginDemo(false); }} className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center' }}>
-            ⚡ Demo 1 Clic
-          </button>
         </div>
       )}
 
@@ -139,11 +130,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
         </p>
 
         <div className="btn-group-responsive" style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginBottom: '40px' }}>
-          <button onClick={onStartSimulation} className="btn btn-primary" style={{ padding: '14px 32px', fontSize: '1rem', borderRadius: '12px' }}>
-            <Zap size={18} /> Comenzar Simulación <ArrowRight size={18} />
-          </button>
-          <button onClick={() => loginDemo(true)} className="btn btn-secondary" style={{ padding: '14px 28px', fontSize: '1rem', borderRadius: '12px' }}>
-            <ShieldCheck size={18} color="var(--color-cyan-500)" /> Ver Dashboard Demo
+          <button onClick={onStartSimulation} className="btn btn-primary" style={{ padding: '14px 36px', fontSize: '1.05rem', borderRadius: '12px' }}>
+            <Zap size={20} /> Comenzar Simulación <ArrowRight size={20} />
           </button>
         </div>
 
