@@ -105,9 +105,9 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
             <DollarSign size={18} color="var(--color-amber-500)" />
           </div>
           <div className="kpi-number" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            R$ {stats.costoTotalEstimado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            $ {stats.costoTotalEstimado.toLocaleString('es-CL', { minimumFractionDigits: 2 })}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-amber-500)', fontWeight: 600, marginTop: '4px' }}>Tarifa R$ 0.75 / kWh</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-amber-500)', fontWeight: 600, marginTop: '4px' }}>Tarifa $ 0.75 / kWh</div>
         </div>
 
         <div className="saas-card">
@@ -199,7 +199,7 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
                       <span className={`badge ${getBadgeClass(item.categoria)}`}>{item.categoria}</span>
                     </td>
                     <td className="font-mono" style={{ padding: '14px 12px', fontWeight: 600 }}>{(item.probabilidad * 100).toFixed(1)}%</td>
-                    <td className="font-mono" style={{ padding: '14px 12px', fontWeight: 700, color: 'var(--color-emerald-600)' }}>R$ {item.costo_estimado_mensual.toFixed(2)}</td>
+                    <td className="font-mono" style={{ padding: '14px 12px', fontWeight: 700, color: 'var(--color-emerald-600)' }}>$ {item.costo_estimado_mensual.toFixed(2)}</td>
                     <td style={{ padding: '14px 12px' }}>
                       <button onClick={() => onSelectAnalisis && onSelectAnalisis(item)} className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '0.75rem' }}>
                         Detalles

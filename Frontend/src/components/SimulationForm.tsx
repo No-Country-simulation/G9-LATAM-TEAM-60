@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Zap, Home, Building2, Briefcase, ShoppingBag, Factory } from 'lucide-react';
+import { Zap, Home, Building2, Coins } from 'lucide-react';
 import type { AnalisisRequest, AnalisisResponse } from '../types';
 import { apiService } from '../services/api';
 import { useToast } from '../context/ToastContext';
+import { CURRENCIES, convertFromBaseCost, formatMoney } from '../utils/currency';
 
 interface SimulationFormProps {
   onSimulationComplete: (res: AnalisisResponse) => void;
@@ -15,18 +16,16 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
   const [equipos, setEquipos] = useState(6);
   const [inmueble, setInmueble] = useState('Casa');
   const [horas, setHoras] = useState(4);
+  const [moneda, setMoneda] = useState<string>('CLP');
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
   const inmuebles = [
     { id: 'Casa', label: 'Casa / Residencial', icon: Home },
     { id: 'Departamento', label: 'Departamento', icon: Building2 },
-    { id: 'Oficina', label: 'Oficina Comercial', icon: Briefcase },
-    { id: 'Comercio', label: 'Local Retail', icon: ShoppingBag },
-    { id: 'Industria', label: 'Nave Industrial', icon: Factory },
   ];
 
-
+  const currentCurrency = CURRENCIES[moneda] || CURRENCIES.CLP;
 
   const handleSimulate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,10 +37,16 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
         uso_horario_pico: pico,
         cantidad_equipos: Number(equipos),
         tipo_inmueble: inmueble,
-        horas_alto_consumo: Number(horas)
+        horas_alto_consumo: Number(horas),
+        moneda: currentCurrency.code,
+        simboloMoneda: currentCurrency.symbol
       };
       const response = await apiService.analizarConsumo(req);
-      showToast('Simulación ejecutada con éxito por el Modelo ML', 'success');
+      response.moneda = currentCurrency.code;
+      response.simboloMoneda = currentCurrency.symbol;
+      const costoBaseML = response.costo_estimado_mensual || (consumo * 0.75);
+      response.costo_estimado_mensual = convertFromBaseCost(costoBaseML, currentCurrency.code);
+      showToast(`Simulación ejecutada con éxito en ${currentCurrency.name}`, 'success');
       onSimulationComplete(response);
     } catch (err) {
       showToast('Error procesando la simulación', 'error');
@@ -50,7 +55,8 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
     }
   };
 
-  const costoEstimado = Math.round(consumo * 0.75 * 100) / 100;
+  const costoBaseEstimado = consumo * 0.75;
+  const costoEstimado = convertFromBaseCost(costoBaseEstimado, currentCurrency.code);
 
   const getConsumoColor = () => {
     if (consumo > 400) return 'var(--color-rose-500)';
@@ -67,7 +73,7 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
         <div>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800 }}>Simulador de Consumo e Inferencia IA</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Ajusta los parámetros energéticos para obtener la categorización ML y estimación tarifaria a R$ 0.75/kWh.
+            Ajusta los parámetros energéticos para obtener la categorización ML y estimación tarifaria a $ 0.75/kWh.
           </p>
         </div>
       </div>
@@ -166,13 +172,13 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '32px', alignItems: 'center' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
-              Zona Climática / Región (Chile & Argentina)
+              Zona Climática / Región LATAM
             </label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {[
-                { id: 'Norte', label: 'Zona Norte (Atacama / NOA-NEA)' },
-                { id: 'Centro', label: 'Zona Centro (Stgo / B. Aires)' },
-                { id: 'Sur', label: 'Zona Sur (Patagonia / Austral)' }
+                { id: 'Norte', label: 'Zona Norte' },
+                { id: 'Centro', label: 'Zona Centro' },
+                { id: 'Sur', label: 'Zona Sur' }
               ].map((r) => (
                 <button
                   key={r.id}
@@ -185,11 +191,6 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
                   {r.id === 'Norte' ? '🌵 Norte' : r.id === 'Centro' ? '🏙️ Centro' : '❄️ Sur'}
                 </button>
               ))}
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '6px' }}>
-              {region === 'Norte' && 'Región Norte: Clima árido/cálido con alta demanda de refrigeración.'}
-              {region === 'Centro' && 'Región Centro: Clima templado (Santiago, Mendoza, Buenos Aires).'}
-              {region === 'Sur' && 'Región Sur: Clima frío/patagónico con mayor consumo de calefacción.'}
             </div>
           </div>
 
@@ -209,19 +210,42 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
           </div>
         </div>
 
+        {/* Selector de Moneda y Tarifa LATAM */}
+        <div style={{ background: 'var(--bg-primary)', padding: '16px 20px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <Coins size={18} color="var(--color-amber-500)" />
+            <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>Seleccionar Moneda y Tarifa de Cálculo</span>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {Object.values(CURRENCIES).map((c) => (
+              <button
+                key={c.code}
+                type="button"
+                onClick={() => setMoneda(c.code)}
+                className={`btn ${moneda === c.code ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ padding: '8px 14px', fontSize: '0.8rem', flex: '1 1 130px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <span>{c.flag}</span>
+                <span style={{ fontWeight: 700 }}>{c.code}</span>
+                <span style={{ fontSize: '0.75rem', opacity: 0.85 }}>({c.symbol})</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Resumen Financiero y Botón */}
         <div style={{ background: 'var(--badge-success-bg)', border: '1px solid var(--badge-success-border)', padding: '20px 24px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
           <div>
             <div style={{ fontSize: '0.75rem', color: 'var(--badge-success-text)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Costo Mensual Estimado (R$ 0.75/kWh)
+              Costo Mensual Proyectado (Tarifa IA × Tipo Cambio {currentCurrency.code})
             </div>
             <div className="font-mono" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-              R$ {costoEstimado.toFixed(2)}
+              {formatMoney(costoEstimado, currentCurrency.code, currentCurrency.symbol)}
             </div>
           </div>
 
           <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '14px 32px', fontSize: '1rem' }}>
-            {loading ? '⚡ Procesando con IA...' : '🚀 Ejecutar Diagnóstico IA'}
+            {loading ? '⚡ Procesando con IA...' : `🚀 Diagnóstico en ${currentCurrency.code}`}
           </button>
         </div>
       </form>

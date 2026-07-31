@@ -3,6 +3,7 @@ import { X, Sparkles, Zap, CheckCircle2, AlertTriangle, RefreshCw, FileText } fr
 import type { AnalisisResponse } from '../types';
 import { useToast } from '../context/ToastContext';
 import { generarComprobantePDF } from '../utils/pdfExporter';
+import { formatMoney } from '../utils/currency';
 
 interface ResultsModalProps {
   result: AnalisisResponse | null;
@@ -100,7 +101,7 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ result, onClose, onR
               Costo Mensual Estimado
             </div>
             <div className="font-mono" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-emerald-500)' }}>
-              R$ {result.costo_estimado_mensual.toFixed(2)}
+              {formatMoney(result.costo_estimado_mensual, result.moneda || result.request?.moneda, result.simboloMoneda || result.request?.simboloMoneda)}
             </div>
           </div>
         </div>

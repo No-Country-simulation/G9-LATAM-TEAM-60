@@ -4,6 +4,7 @@ import type { AnalisisResponse } from '../types';
 import { apiService } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { generarComprobantePDF } from '../utils/pdfExporter';
+import { formatMoney } from '../utils/currency';
 
 interface HistoryViewProps {
   onSelectAnalisis: (res: AnalisisResponse) => void;
@@ -55,7 +56,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
       '"ID Diagnóstico"',
       '"Categoría ML"',
       '"Confianza Modelo (%)"',
-      '"Costo Mensual Proyectado (R$)"',
+      '"Costo Mensual Proyectado ($)"',
       '"Consumo Evaluado (kWh)"',
       '"Tipo Inmueble"',
       '"Cantidad Equipos"',
@@ -71,7 +72,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
       const identificador = `"${i.identificador || ''}"`;
       const categoria = `"${i.categoria || ''}"`;
       const probabilidad = `"${(i.probabilidad * 100).toFixed(1)}%"`;
-      const costo = `"R$ ${i.costo_estimado_mensual.toFixed(2)}"`;
+      const costo = `"$ ${i.costo_estimado_mensual.toFixed(2)}"`;
       const consumo = i.request ? `"${i.request.consumo_kwh} kWh"` : '"N/A"';
       const inmueble = i.request ? `"${i.request.tipo_inmueble}"` : '"N/A"';
       const equipos = i.request ? `"${i.request.cantidad_equipos}"` : '"N/A"';
@@ -128,7 +129,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
         <td style="border: 1px solid #cbdad3; padding: 8px;">${i.fecha ? new Date(i.fecha).toLocaleString('es-ES') : 'Hoy'}</td>
         <td style="border: 1px solid #cbdad3; padding: 8px; font-weight: bold; color: ${i.categoria.includes('Efi') ? '#059669' : i.categoria.includes('Mod') ? '#d97706' : '#dc2626'};">${i.categoria}</td>
         <td style="border: 1px solid #cbdad3; padding: 8px; font-family: monospace;">${(i.probabilidad * 100).toFixed(1)}%</td>
-        <td style="border: 1px solid #cbdad3; padding: 8px; font-family: monospace; font-weight: bold; color: #059669;">R$ ${i.costo_estimado_mensual.toFixed(2)}</td>
+        <td style="border: 1px solid #cbdad3; padding: 8px; font-family: monospace; font-weight: bold; color: #059669;">$ ${i.costo_estimado_mensual.toFixed(2)}</td>
         <td style="border: 1px solid #cbdad3; padding: 8px;">${i.request?.tipo_inmueble || 'Casa'}</td>
         <td style="border: 1px solid #cbdad3; padding: 8px;">${i.request?.consumo_kwh || '240'} kWh</td>
         <td style="border: 1px solid #cbdad3; padding: 8px;">${i.recomendaciones?.join(' | ') || 'Sin observaciones'}</td>
@@ -151,7 +152,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
               <th style="border: 1px solid #047857; padding: 10px; text-align: left;">FECHA AUDITORÍA</th>
               <th style="border: 1px solid #047857; padding: 10px; text-align: left;">CATEGORÍA ML</th>
               <th style="border: 1px solid #047857; padding: 10px; text-align: left;">CONFIANZA (%)</th>
-              <th style="border: 1px solid #047857; padding: 10px; text-align: left;">COSTO MENSUAL (R$)</th>
+              <th style="border: 1px solid #047857; padding: 10px; text-align: left;">COSTO MENSUAL ($)</th>
               <th style="border: 1px solid #047857; padding: 10px; text-align: left;">INMUEBLE</th>
               <th style="border: 1px solid #047857; padding: 10px; text-align: left;">CONSUMO KWH</th>
               <th style="border: 1px solid #047857; padding: 10px; text-align: left;">DIRECTIVAS DE AHORRO IA</th>
@@ -253,7 +254,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
                       <span className={`badge ${getBadgeClass(item.categoria)}`}>{item.categoria}</span>
                     </td>
                     <td className="font-mono" style={{ padding: '14px 12px', fontWeight: 600 }}>{(item.probabilidad * 100).toFixed(1)}%</td>
-                    <td className="font-mono" style={{ padding: '14px 12px', fontWeight: 700, color: 'var(--color-emerald-600)' }}>R$ {item.costo_estimado_mensual.toFixed(2)}</td>
+                    <td className="font-mono" style={{ padding: '14px 12px', fontWeight: 700, color: 'var(--color-emerald-600)' }}>{formatMoney(item.costo_estimado_mensual, item.moneda || item.request?.moneda, item.simboloMoneda || item.request?.simboloMoneda)}</td>
                     <td style={{ padding: '14px 12px' }}>
                       <div style={{ display: 'flex', gap: '6px' }}>
                         <button onClick={() => onSelectAnalisis(item)} className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '0.75rem' }} title="Ver detalles">

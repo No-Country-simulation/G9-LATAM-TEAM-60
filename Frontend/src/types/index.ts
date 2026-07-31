@@ -5,6 +5,8 @@ export interface AnalisisRequest {
   cantidad_equipos: number;
   tipo_inmueble: string;
   horas_alto_consumo: number;
+  moneda?: string;
+  simboloMoneda?: string;
 }
 
 export interface AnalisisResponse {
@@ -15,6 +17,14 @@ export interface AnalisisResponse {
   costo_estimado_mensual: number;
   recomendaciones: string[];
   fecha?: string;
+  moneda?: string;
+  simboloMoneda?: string;
+  consumo_kwh?: number;
+  tipo_inmueble?: string;
+  cantidad_equipos?: number;
+  uso_horario_pico?: boolean;
+  horas_alto_consumo?: number;
+  region?: string;
   request?: AnalisisRequest;
 }
 
