@@ -3,7 +3,7 @@ from typing import List
 
 # Esquema de Entrada (Datos que el Backend/Frontend deben enviar en formato JSON)
 class PredictionRequest(BaseModel):
-    consumo_kwh: float = Field(..., example=530.5, description="Consumo eléctrico total en kWh")
+    consumo_kwh: float = Field(..., examples=[530.5], description="Consumo eléctrico total en kWh")
     cantidad_equipos: int = Field(..., example=12, description="Cantidad de electrodomésticos reportados")
     horas_alto_consumo: int = Field(..., example=7, description="Horas continuas de alto consumo diario")
     tipo_inmueble: str = Field(..., example="Casa", description="'Casa' o 'Departamento'")
