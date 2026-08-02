@@ -4,6 +4,10 @@ El desarrollo y seguimiento de tareas de este proyecto se gestiona mediante **Ji
 * 📋 **Tablero del Proyecto (Jira):**
 https://g9-latam-team-60-energiai.atlassian.net/jira/core/projects/GLT6/board?filter=&groupBy=none&atlOrigin=eyJpIjoiYmRlYTIzZmY5MDU1NGU0OWJhNzFlM2EyYTY5NTUzMmEiLCJwIjoiaiJ9
 
+para iniciar el servicio:
+cd energiai-ai-service
+uvicorn app.main:app --reload
+
 ## Criterios y Definición del Negocio
 
 # 📊 Justificación de las 3 Categorías Energéticas y Umbrales
