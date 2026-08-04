@@ -19,7 +19,7 @@
 - [⚡ Descripción y Propósito](#-descripción-y-propósito)
 - [✨ Funcionalidades Principales](#-funcionalidades-principales)
 - [🏗️ Arquitectura del Sistema](#️-arquitectura-del-sistema)
-- [🛠️ Tecnologías Utilizadas](#️-tecnologías-utilizadas)
+- [🛠️ Tecnologías Principales](#️-tecnologías-principales)
 - [📂 Estructura del Proyecto](#-estructura-del-proyecto)
 - [⚙️ Instalación y Configuración](#️-instalación-y-configuración)
 - [🔌 API y Endpoints](#-api-y-endpoints)
@@ -63,7 +63,7 @@ Proveer un Producto Mínimo Viable (MVP) completo y funcional capaz de analizar 
 - Soporte para **CLP** (Peso Chileno), **ARS** (Peso Argentino), **BRL** (Real Brasileño) y **USD** (Dólar Estadounidense).
 
 ### 🌿 Calculadora e Interpretación de Huella de Carbono
-- Factor de emisión normado de $0.385\text{ kg CO}_2\text{/kWh}$.
+- Factor de emisión normado de 0.385 kg CO₂ / kWh.
 - Muestreo de equivalencias ecológicas interactivas:
   - 🌲 **Árboles necesarios** para neutralizar las emisiones.
   - 🚗 **Kilómetros recorridos** en un vehículo a gasolina promedio.
@@ -112,28 +112,16 @@ flowchart LR
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Tecnologías Principales
 
-| Capa / Área | Tecnología | Versión | Descripción y Uso |
-|---|---|---|---|
-| **Frontend** | React | 18.3.1 | Biblioteca UI basada en componentes funcionales y Hooks |
-| **Frontend** | TypeScript | 5.5.3 | Tipado estático estricto para modelos y servicios |
-| **Frontend** | Vite | 5.4.1 | Empaquetador y servidor de desarrollo ultra-rápido |
-| **Frontend** | Lucide React | 0.344.0 | Conjunto de iconos vectoriales para la interfaz |
-| **Frontend** | jsPDF / html2canvas | 2.5.1 / 1.4.1 | Exportación de comprobantes de diagnóstico a PDF |
-| **Backend** | Java | 21 LTS | Lenguaje de programación orientado a objetos empresarial |
-| **Backend** | Spring Boot | 3.3.0 | Framework para desarrollo de microservicios REST |
-| **Backend** | Spring Security | 6.3.0 | Seguridad, control de acceso y filtros de autenticación |
-| **Backend** | Auth0 java-jwt | 4.4.0 | Generación y validación de tokens JWT HMAC256 |
-| **Backend** | Spring Data JPA | 3.3.0 | Mapeo objeto-relacional (ORM) con Hibernate |
-| **IA / ML** | Python | 3.12 | Lenguaje para análisis de datos y microservicio de inferencia |
-| **IA / ML** | FastAPI / Uvicorn | 0.141.1 / 0.40.0 | Framework ASGI para la exposición del modelo vía REST API |
-| **IA / ML** | Scikit-Learn | 1.4.0 | Entrenamiento y pipelines de Random Forest y Regresión Logística |
-| **IA / ML** | Pandas / NumPy | 2.2.0 / 1.26.4 | Limpieza, estructuración y manipulación de datos |
-| **IA / ML** | Joblib | 1.3.2 | Serialización y deserialización de pipelines de ML |
-| **Base de Datos** | H2 / PostgreSQL | 2.2 / 16 | Almacenamiento en memoria para desarrollo / relacional para prod |
-| **Infraestructura** | OCI (Oracle Cloud) | Compute / Storage | Hosting de máquinas virtuales y almacenamiento de artefactos |
-| **Gestión** | Jira Software | Cloud | Gestión ágil de proyectos y seguimiento de Sprints |
+| Capa / Área | Tecnología Principal | Uso / Descripción |
+|---|---|---|
+| **Frontend** | React 18 + TypeScript (Vite) | Interfaz web interactiva y cliente de diagnóstico energético |
+| **Backend** | Java 21 + Spring Boot 3.3.0 | API REST principal, gestión de usuarios, seguridad JWT y JPA |
+| **IA / Machine Learning** | Python 3.12 + FastAPI + Scikit-Learn | Microservicio de inferencia en tiempo real (Random Forest) |
+| **Base de Datos** | H2 / PostgreSQL | Persistencia relacional para usuarios e historial de análisis |
+| **Infraestructura Cloud** | Oracle Cloud Infrastructure (OCI) | Despliegue en VM Compute Instance y almacenamiento de modelos |
+| **Gestión de Proyecto** | Jira Software | Metodología ágil Scrum y seguimiento de Sprints |
 
 ---
 
@@ -314,21 +302,25 @@ flowchart TD
 
 La clasificación del perfil de consumo se basa en los siguientes umbrales definidos en el estudio de mercado del proyecto:
 
-| Categoría | Consumo Mensual | Horas de Alto Consumo | Uso Horario Pico | Costo Estimado Base (USD/BRL) |
+| Categoría | Consumo Mensual | Horas de Alto Consumo | Uso Horario Pico | Costo Estimado Base (USD) |
 |---|---|---|---|---|
-| 🟢 **Eficiente** | $\le 200\text{ kWh}$ | $< 4\text{ horas/día}$ | No determinante | $\le \$ 150.00$ |
-| 🟡 **Moderado** | $201 - 400\text{ kWh}$ | $4 - 7\text{ horas/día}$ | Ocasional | $\$ 150.75 - \$ 300.00$ |
-| 🔴 **Ineficiente** | $> 400\text{ kWh}$ | $> 7\text{ horas/día}$ | Frecuente / Sí | $> \$ 300.00$ |
+| 🟢 **Eficiente** | ≤ 200 kWh | < 4 horas/día | No determinante | ≤ $ 150.00 |
+| 🟡 **Moderado** | 201 – 400 kWh | 4 – 7 horas/día | Ocasional | $ 150.75 – $ 300.00 |
+| 🔴 **Ineficiente** | > 400 kWh | > 7 horas/día | Frecuente / Sí | > $ 300.00 |
 
 ### 🧮 Fórmulas de Cálculo
-1. **Costo Estimado Base**:
-   $$\text{Costo Base} = \text{consumo\_kwh} \times 0.75$$
-2. **Conversión de Moneda (CLP)**:
-   $$\text{Costo CLP} = \text{Costo Base} \times 925.0$$
-3. **Huella de Carbono**:
-   $$\text{Emisiones CO}_2\text{ (kg)} = \text{consumo\_kwh} \times 0.385$$
-4. **Equivalencia en Árboles**:
-   $$\text{Árboles} = \left\lceil \frac{\text{Emisiones CO}_2}{21.77} \right\rceil$$
+
+1. **Costo Estimado Base**:  
+   `Costo Base = Consumo (kWh) × 0.75`
+
+2. **Conversión a Moneda Local (ej. CLP)**:  
+   `Costo CLP = Costo Base × Tasa de Cambio (925.0)`
+
+3. **Huella de Carbono**:  
+   `Emisiones CO₂ (kg) = Consumo (kWh) × 0.385`
+
+4. **Equivalencia en Árboles**:  
+   `Árboles a Plantar = Emisiones CO₂ / 21.77`
 
 ---
 
