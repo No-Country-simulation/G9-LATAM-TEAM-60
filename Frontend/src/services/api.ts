@@ -15,42 +15,71 @@ const getHeaders = () => {
 
 export const apiService = {
   async analizarConsumo(data: AnalisisRequest): Promise<AnalisisResponse> {
+    // 1. Intentar llamar al microservicio ML Python (FastAPI en port 8000) o Backend Java (port 8080)
     try {
-      const response = await fetch(`${BASE_URL}/analisis-energetico`, {
+      const mlResponse = await fetch('http://localhost:8000/predict', {
         method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          consumo_kwh: data.consumo_kwh,
+          uso_horario_pico: data.uso_horario_pico,
+          cantidad_equipos: data.cantidad_equipos,
+          tipo_inmueble: data.tipo_inmueble,
+          horas_alto_consumo: data.horas_alto_consumo,
+          region: data.region,
+        }),
       });
-      if (!response.ok) throw new Error('Error en el backend');
-      return await response.json();
-    } catch (err) {
-      console.warn('[Offline Mode / Resilient Fallback] Backend o ML no disponible, ejecutando lógica local:', err);
-      const costo = Math.round(data.consumo_kwh * 0.75 * 100) / 100;
-      let cat = 'Eficiente';
-      let prob = 0.93;
-      const recs: string[] = [];
-      if (data.consumo_kwh > 400 || data.horas_alto_consumo > 7) {
-        cat = 'Ineficiente';
-        prob = 0.89;
-        recs.push('Alerta de consumo crítico: Desconecta electrodomésticos en modo espera y revisa la instalación eléctrica.');
-        recs.push('Evita utilizar línea blanca durante el horario pico (18:00 - 22:00).');
-      } else if (data.consumo_kwh > 200) {
-        cat = 'Moderado';
-        prob = 0.81;
-        recs.push('Optimiza la iluminación cambiando bombillas tradicionales a tecnología LED.');
-        recs.push('Aprovecha la luz natural y programa termostatos o sistemas de climatización.');
-      } else {
-        recs.push('¡Felicidades! Mantienes un consumo sostenible. Sigue con tus buenos hábitos de ahorro.');
+      if (mlResponse.ok) {
+        const mlData = await mlResponse.json();
+        return {
+          identificador: mlData.identificador,
+          categoria: mlData.categoria,
+          probabilidad: mlData.probabilidad,
+          costo_estimado_mensual: mlData.costo_estimado_mensual,
+          recomendaciones: mlData.recomendaciones,
+          fecha: mlData.fecha,
+        };
       }
-      return {
-        identificador: 'IA-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
-        categoria: cat,
-        probabilidad: prob,
-        costo_estimado_mensual: costo,
-        recomendaciones: recs,
-        fecha: new Date().toISOString()
-      };
+    } catch (mlErr) {
+      // Si FastAPI no está listo, intentar Backend Java en 8080
+      try {
+        const response = await fetch(`${BASE_URL}/analisis-energetico`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify(data),
+        });
+        if (response.ok) return await response.json();
+      } catch (backendErr) {
+        // Ignorar y ejecutar fallback local
+      }
     }
+
+    // Fallback resiliente offline local
+    const costo = Math.round(data.consumo_kwh * 0.75 * 100) / 100;
+    let cat = 'Eficiente';
+    let prob = 0.93;
+    const recs: string[] = [];
+    if (data.consumo_kwh > 400 || data.horas_alto_consumo > 7) {
+      cat = 'Ineficiente';
+      prob = 0.89;
+      recs.push('Alerta de consumo crítico: Desconecta electrodomésticos en modo espera y revisa la instalación eléctrica.');
+      recs.push('Evita utilizar línea blanca durante el horario pico (18:00 - 22:00).');
+    } else if (data.consumo_kwh > 200) {
+      cat = 'Moderado';
+      prob = 0.81;
+      recs.push('Optimiza la iluminación cambiando bombillas tradicionales a tecnología LED.');
+      recs.push('Aprovecha la luz natural y programa termostatos o sistemas de climatización.');
+    } else {
+      recs.push('¡Felicidades! Mantienes un consumo sostenible. Sigue con tus buenos hábitos de ahorro.');
+    }
+    return {
+      identificador: 'IA-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
+      categoria: cat,
+      probabilidad: prob,
+      costo_estimado_mensual: costo,
+      recomendaciones: recs,
+      fecha: new Date().toISOString()
+    };
   },
 
   async obtenerHistorial(): Promise<AnalisisResponse[]> {
