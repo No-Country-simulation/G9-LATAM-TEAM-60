@@ -1,14 +1,16 @@
 # ⚡ EnergiAI
 
-> Plataforma inteligente para el análisis, clasificación y optimización del consumo energético residencial y comercial mediante Inteligencia Artificial y Ciencia de Datos.
+> Plataforma inteligente para el análisis, clasificación y optimización del consumo energético residencial y comercial mediante Inteligencia Artificial y Ciencia de Datos.  
+> **Proyecto desarrollado por G9-LATAM-Team 60 para la Hackathon ONE G9 - LATAM.**
 
+![Hackathon](https://img.shields.io/badge/Hackathon-ONE%20G9--LATAM-orange)
+![Team](https://img.shields.io/badge/Team-G9--LATAM--Team%2060-blue)
 ![Version](https://img.shields.io/badge/version-1.0.0--MVP-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-green?logo=springboot)
 ![React](https://img.shields.io/badge/React-18-blue?logo=react)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688?logo=fastapi)
 ![Python](https://img.shields.io/badge/Python-3.12-yellow?logo=python)
-![OCI](https://img.shields.io/badge/OCI-Compute%20%26%20Storage-red?logo=oracle)
 
 ---
 
@@ -24,9 +26,6 @@
 - [🤖 Inteligencia Artificial y Machine Learning](#-inteligencia-artificial-y-machine-learning)
 - [📊 Clasificación Energética y Métricas](#-clasificación-energética-y-métricas)
 - [🔄 Flujo Funcional del Sistema](#-flujo-funcional-del-sistema)
-- [🔐 Seguridad](#-seguridad)
-- [🧪 Pruebas y Verificación](#-pruebas-y-verificación)
-- [🚧 Estado del Proyecto](#-estado-del-proyecto)
 - [📋 Gestión del Proyecto](#-gestión-del-proyecto)
 - [👥 Equipo de Desarrollo](#-equipo-de-desarrollo)
 - [📚 Documentación Adicional](#-documentación-adicional)
@@ -352,44 +351,11 @@ flowchart TD
 
 ---
 
-## 🔐 Seguridad
-
-- **Protección contra Inyecciones y Fugas**: Manejo estricto de parámetros mediante DTOs e inmutabilidad en las peticiones REST.
-- **Autenticación Basada en Tokens**: JWT firmados con expiración configurable. No se almacenan contraseñas en texto plano (hashing con BCrypt).
-- **Políticas CORS**: Configuración de `CORSMiddleware` en FastAPI y `WebMvcConfigurer` en Spring Boot para restringir orígenes no autorizados.
-
----
-
-## 🧪 Pruebas y Verificación
-
-El proyecto ha sido probado de forma end-to-end utilizando automatización de control de DOM:
-
-- **Prueba End-to-End en Navegador**: Verificación automática de ingreso de formulario (450 kWh, 12 equipos, 8h consumo, zona Norte, horario pico) comprobando la apertura del modal con dictamen `INEFICIENTE`, probabilidad del `88.0%` y cálculo en CLP.
-- **Prueba de Resiliencia (Offline Fallback)**: Verificación de que la interfaz continúa funcionando de forma transparente ante la desconexión eventual del backend o microservicio.
-
----
-
-## 🚧 Estado del Proyecto
-
-### ✅ Implementado (MVP 100% Funcional)
-- [x] Formulario interactivo de simulación con sliders dinámicos.
-- [x] Selector multi-moneda (CLP, ARS, BRL, USD).
-- [x] Calculadora de Huella de Carbono y equivalencias interactivas.
-- [x] Microservicio de inferencia ML con FastAPI (puerto 8000).
-- [x] Backend Spring Boot con seguridad JWT y persistencia JPA.
-- [x] Modal de dictamen de perfil energético y recomendaciones.
-- [x] Exportador de comprobante oficial en PDF.
-
-### 🔄 En Desarrollo / Futuras Mejores
-- [ ] Integración con APIs de proveedores de tarifas eléctricas en tiempo real.
-- [ ] Dashboard analítico con gráficos históricos comparativos mes a mes.
-
----
-
 ## 📋 Gestión del Proyecto
 
-El desarrollo se gestionó de manera ágil utilizando **Jira Software** como plataforma centralizada para el seguimiento del trabajo:
+El desarrollo se gestionó de manera ágil utilizando **Jira Software** como plataforma centralizada para el seguimiento del trabajo durante la **Hackathon ONE G9 - LATAM**:
 
+- **Tablero de Jira Software**: [https://g9-latam-team-60-energiai.atlassian.net](https://g9-latam-team-60-energiai.atlassian.net)
 - **Organización**: Metodología Scrum organizada en Sprints de 1 semana.
 - **Seguimiento**: Tableros Kanban para el flujo de tareas (*To Do*, *In Progress*, *Testing*, *Done*).
 - **Métricas**: Gráficos de Burndown y velocidad del equipo.
@@ -398,14 +364,17 @@ El desarrollo se gestionó de manera ágil utilizando **Jira Software** como pla
 
 ## 👥 Equipo de Desarrollo
 
-| Integrante | Rol | Especialidad |
-|---|---|---|
-| **SonJorell** | Full-Stack Architect & Tech Lead | React, TypeScript, Spring Boot, FastAPI, CI/CD |
-| **Agustín Negri** | Data Scientist & ML Engineer | EDA, Random Forest, Feature Engineering, Python |
-| **Gerardo Salfate** | Data Scientist & Analyst | Limpieza de datos, Modelos Supervisados, Evaluaciones |
-| **Daniel Peña Moya** | Backend Developer | Spring Boot, JPA, Seguridad JWT, PostgreSQL |
-| **Sebastián Sánchez** | Full-Stack Developer | Integración REST, Componentes UI, Controllers |
-| **Tomás Moya** | Frontend UI/UX Specialist | Diseño de Interfaces, CSS, Diagramación Wireframes |
+### 🚀 G9-LATAM-Team 60 (Hackathon ONE G9 - LATAM)
+
+| Integrante | Rol |
+|---|---|
+| **Agustin Negri Hrytezuk** | Backend Developer |
+| **Gerardo Salfate** | BI Analyst |
+| **Nimrod Valencia** | Data Scientist |
+| **Sebastian Sanchez** | Backend Developer |
+| **Tomas Moya** | Backend Developer |
+| **David Peña** | Data Analyst |
+| **Jorell Antonio Inostroza Arias** | Full Stack Developer |
 
 ---
 
