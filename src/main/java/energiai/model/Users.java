@@ -12,24 +12,49 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table (name = "users")
+@Table(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode (of = "id")
+@EqualsAndHashCode(of = "id")
 public class Users implements UserDetails {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String nombreCompleto;
     private String username;
     private String password;
 
+    public Users() {}
+
     public Users(@Valid CreateUserDataDTO dto) {
         this.nombreCompleto = dto.nombreCompleto();
         this.username = dto.username();
         this.password = dto.password();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getNombreCompleto() {
+        return nombreCompleto;
+    }
+
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

@@ -24,12 +24,16 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configure(http))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests( auth ->
-                        auth.requestMatchers(HttpMethod.POST, "/users/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/users/signin").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register", "/users/login", "/users/signin", "/api/analisis-energetico").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me", "/api/health", "/h2-console/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .anyRequest().permitAll()
                 )
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
