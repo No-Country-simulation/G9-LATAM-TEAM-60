@@ -15,43 +15,32 @@ const getHeaders = () => {
 
 export const apiService = {
   async analizarConsumo(data: AnalisisRequest): Promise<AnalisisResponse> {
-    // 1. Intentar llamar al microservicio ML Python (FastAPI en port 8000) o Backend Java (port 8080)
+    // 1. Enviar la simulación al Backend Java (port 8080), el cual llama a Python ML y guarda en H2
+    try {
+      const response = await fetch(`${BASE_URL}/analisis-energetico`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (err) {
+      console.warn('Error llamando al backend Java (8080), intentando fallback:', err);
+    }
+
+    // 2. Fallback a Python ML directo si el backend Java no estuviera disponible
     try {
       const mlResponse = await fetch('http://localhost:8000/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          consumo_kwh: data.consumo_kwh,
-          uso_horario_pico: data.uso_horario_pico,
-          cantidad_equipos: data.cantidad_equipos,
-          tipo_inmueble: data.tipo_inmueble,
-          horas_alto_consumo: data.horas_alto_consumo,
-          region: data.region,
-        }),
+        body: JSON.stringify(data),
       });
       if (mlResponse.ok) {
-        const mlData = await mlResponse.json();
-        return {
-          identificador: mlData.identificador,
-          categoria: mlData.categoria,
-          probabilidad: mlData.probabilidad,
-          costo_estimado_mensual: mlData.costo_estimado_mensual,
-          recomendaciones: mlData.recomendaciones,
-          fecha: mlData.fecha,
-        };
+        return await mlResponse.json();
       }
     } catch (mlErr) {
-      // Si FastAPI no está listo, intentar Backend Java en 8080
-      try {
-        const response = await fetch(`${BASE_URL}/analisis-energetico`, {
-          method: 'POST',
-          headers: getHeaders(),
-          body: JSON.stringify(data),
-        });
-        if (response.ok) return await response.json();
-      } catch (backendErr) {
-        // Ignorar y ejecutar fallback local
-      }
+      // Ignorar e ir al fallback resiliente local
     }
 
     // Fallback resiliente offline local
@@ -134,13 +123,13 @@ export const apiService = {
       console.warn('Usando stats de prueba en modo offline:', err);
       const historial = await this.obtenerHistorial();
       return {
-        totalConsultas: 24,
-        consumoPromedioKwh: 275.5,
-        costoTotalEstimado: 4120.50,
+        totalConsultas: historial.length,
+        consumoPromedioKwh: historial.length > 0 ? Number((historial.reduce((acc, curr) => acc + (curr.consumo_kwh || 0), 0) / historial.length).toFixed(1)) : 0,
+        costoTotalEstimado: Number(historial.reduce((acc, curr) => acc + (curr.costo_estimado_mensual || 0), 0).toFixed(2)),
         distribucionCategorias: {
-          Eficiente: 12,
-          Moderado: 8,
-          Ineficiente: 4
+          Eficiente: historial.filter(h => h.categoria === 'Eficiente').length,
+          Moderado: historial.filter(h => h.categoria === 'Moderado').length,
+          Ineficiente: historial.filter(h => h.categoria === 'Ineficiente').length
         },
         analisisRecientes: historial
       };

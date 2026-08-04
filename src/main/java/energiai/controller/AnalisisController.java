@@ -8,44 +8,33 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Controlador REST principal para gestionar los análisis energéticos y el historial de auditorías.
- * Expone endpoints HTTP consumidos por la aplicación Frontend en React.
+ * Controlador REST principal para gestionar los análisis energéticos, el dashboard y el historial.
  */
 @RestController
 @RequestMapping("/api")
 public class AnalisisController {
 
-    // Servicio inyectado que maneja la comunicación con el modelo ML (Python) y la persistencia en Base de Datos
     private final AiClientService aiClientService;
 
-    // Inyección de dependencias mediante constructor (Buenas prácticas Spring Boot)
     public AnalisisController(AiClientService aiClientService) {
         this.aiClientService = aiClientService;
     }
 
-    /**
-     * Endpoint POST para procesar una nueva simulación de consumo energético.
-     * Recibe los datos del inmueble en el cuerpo (JSON) y los envía al servicio de IA.
-     */
     @PostMapping("/analisis-energetico")
     public ResponseEntity<AnalisisEnergeticoResponse> procesarAnalisis(@RequestBody AnalisisEnergeticoRequest request) {
-        // Extrae la información de autenticación del usuario actual desde el Token JWT (si existe sesión activa)
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) ? auth.getName() : null;
 
-        // Procesa el análisis a través del servicio de IA y vincula el resultado al usuario si está autenticado
         AnalisisEnergeticoResponse response = aiClientService.obtenerAnalisis(request, username);
-        
-        // Retorna la respuesta HTTP 200 OK con el resultado del diagnóstico en formato JSON
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Endpoint GET para consultar el historial de auditorías del usuario autenticado.
-     */
     @GetMapping("/analisis/historial")
     public ResponseEntity<List<AnalisisEnergeticoResponse>> obtenerHistorial() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -58,9 +47,32 @@ public class AnalisisController {
         return ResponseEntity.ok(historial);
     }
 
-    /**
-     * Endpoint GET para obtener un análisis específico por su ID.
-     */
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Object>> obtenerDashboardStats() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) ? auth.getName() : null;
+
+        List<AnalisisEnergeticoResponse> historial = (username != null)
+                ? aiClientService.obtenerHistorialUsuario(username)
+                : aiClientService.obtenerHistorialGlobal();
+
+        long total = historial.size();
+        double consumoPromedio = total > 0 ? historial.stream().mapToDouble(AnalisisEnergeticoResponse::getConsumo_kwh).average().orElse(0.0) : 0.0;
+        double costoTotal = historial.stream().mapToDouble(AnalisisEnergeticoResponse::getCosto_estimado_mensual).sum();
+
+        Map<String, Long> distribucion = historial.stream()
+                .collect(Collectors.groupingBy(a -> a.getCategoria() != null ? a.getCategoria() : "Moderado", Collectors.counting()));
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalConsultas", total);
+        stats.put("consumoPromedioKwh", Math.round(consumoPromedio * 10.0) / 10.0);
+        stats.put("costoTotalEstimado", Math.round(costoTotal * 100.0) / 100.0);
+        stats.put("distribucionCategorias", distribucion);
+        stats.put("analisisRecientes", historial);
+
+        return ResponseEntity.ok(stats);
+    }
+
     @GetMapping("/analisis/{id}")
     public ResponseEntity<AnalisisEnergeticoResponse> obtenerPorId(@PathVariable Long id) {
         AnalisisEnergeticoResponse response = aiClientService.obtenerPorId(id);

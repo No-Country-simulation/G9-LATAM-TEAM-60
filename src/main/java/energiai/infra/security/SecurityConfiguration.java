@@ -29,7 +29,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register", "/users/login", "/users/signin", "/api/analisis-energetico").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/me", "/api/health", "/h2-console/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me", "/api/analisis/historial", "/api/dashboard", "/api/health", "/h2-console/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().permitAll()
                 )
