@@ -2,10 +2,20 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
 app = FastAPI(title="EnergiAI - ML Inference API", version="1.0.0")
+
+# Habilitar CORS para permitir peticiones desde el Frontend React (http://localhost:5173)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class AnalisisRequest(BaseModel):
     consumo_kwh: float
