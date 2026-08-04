@@ -1,7 +1,13 @@
 package energiai.repository;
 
-import energiai.dto.AnalisisEnergeticoRequest;
+import energiai.model.Analisis;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface AnalisisRepository extends JpaRepository<AnalisisEnergeticoRequest, Long> {
+import java.util.List;
+
+@Repository
+public interface AnalisisRepository extends JpaRepository<Analisis, Long> {
+    List<Analisis> findByUserIdOrderByFechaCreacionDesc(Long userId);
+    List<Analisis> findAllByOrderByFechaCreacionDesc();
 }
