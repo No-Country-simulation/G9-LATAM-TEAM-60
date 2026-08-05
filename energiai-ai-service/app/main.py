@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
-from app.schemas import PredictionRequest, PredictionResponse
-from app.model_loader import model_loader
-from app.logic import procesar_prediccion_y_recomendaciones
+from app.schemas.predict import PredictionRequest, PredictionResponse
+from app.services.model_loader import model_loader
+from app.services.logic import procesar_prediccion_y_recomendaciones
 
 # Evento de inicio: Cargar el modelo en memoria antes de recibir peticiones
 @asynccontextmanager

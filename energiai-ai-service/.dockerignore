@@ -8,3 +8,8 @@ __pycache__
 venv
 .env
 .vscode
+
+# Credenciales y modelos de OCI
+.oci/
+*.pem
+Dockerfile

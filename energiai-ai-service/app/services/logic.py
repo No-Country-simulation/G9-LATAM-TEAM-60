@@ -1,5 +1,5 @@
 import pandas as pd
-from .schemas import PredictionRequest
+from app.schemas.predict import PredictionRequest
 
 def procesar_prediccion_y_recomendaciones(request: PredictionRequest, model):
     """
