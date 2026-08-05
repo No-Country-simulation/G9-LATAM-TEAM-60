@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.git
+.gitignore
+venv
+.env
+.vscode
+
+# Credenciales y modelos de OCI
+.oci/
+*.pem
+Dockerfile
