@@ -15,58 +15,52 @@ const getHeaders = () => {
 
 export const apiService = {
   async analizarConsumo(data: AnalisisRequest): Promise<AnalisisResponse> {
-    // 1. Intentar llamar al microservicio ML Python (FastAPI en port 8000) o Backend Java (port 8080)
+    // Siempre pasar por el Backend Java (puerto 8080)
+    // El backend llama internamente al ML y persiste en BD con el usuario autenticado.
     try {
-      const mlResponse = await fetch('http://localhost:8000/predict', {
+      const response = await fetch(`${BASE_URL}/analisis-energetico`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          consumo_kwh: data.consumo_kwh,
-          uso_horario_pico: data.uso_horario_pico,
-          cantidad_equipos: data.cantidad_equipos,
-          tipo_inmueble: data.tipo_inmueble,
-          horas_alto_consumo: data.horas_alto_consumo,
-          region: data.region,
-        }),
+        headers: getHeaders(),
+        body: JSON.stringify(data),
       });
-      if (mlResponse.ok) {
-        const mlData = await mlResponse.json();
-        return {
-          identificador: mlData.identificador,
-          categoria: mlData.categoria,
-          probabilidad: mlData.probabilidad,
-          costo_estimado_mensual: mlData.costo_estimado_mensual,
-          recomendaciones: mlData.recomendaciones,
-          fecha: mlData.fecha,
-        };
+      if (response.ok) {
+        const result: AnalisisResponse = await response.json();
+        // Garantizar que request siempre esté presente para PDF e historial
+        if (!result.request) {
+          result.request = {
+            region: data.region,
+            consumo_kwh: data.consumo_kwh,
+            uso_horario_pico: data.uso_horario_pico,
+            cantidad_equipos: data.cantidad_equipos,
+            tipo_inmueble: data.tipo_inmueble,
+            horas_alto_consumo: data.horas_alto_consumo,
+            moneda: data.moneda,
+            simboloMoneda: data.simboloMoneda,
+          };
+        }
+        // Propagar moneda al response-level también
+        if (!result.moneda && data.moneda)          result.moneda = data.moneda;
+        if (!result.simboloMoneda && data.simboloMoneda) result.simboloMoneda = data.simboloMoneda;
+        return result;
       }
-    } catch (mlErr) {
-      // Si FastAPI no está listo, intentar Backend Java en 8080
-      try {
-        const response = await fetch(`${BASE_URL}/analisis-energetico`, {
-          method: 'POST',
-          headers: getHeaders(),
-          body: JSON.stringify(data),
-        });
-        if (response.ok) return await response.json();
-      } catch (backendErr) {
-        // Ignorar y ejecutar fallback local
-      }
+      // Si el backend devuelve error HTTP, lanzar para que caiga al fallback
+      const errText = await response.text();
+      throw new Error(`Backend error ${response.status}: ${errText}`);
+    } catch (err) {
+      console.warn('[api] Backend Java no disponible, ejecutando fallback local:', err);
     }
 
-    // Fallback resiliente offline local
+    // Fallback local (offline) — incluye request data completo
     const costo = Math.round(data.consumo_kwh * 0.75 * 100) / 100;
     let cat = 'Eficiente';
     let prob = 0.93;
     const recs: string[] = [];
     if (data.consumo_kwh > 400 || data.horas_alto_consumo > 7) {
-      cat = 'Ineficiente';
-      prob = 0.89;
+      cat = 'Ineficiente'; prob = 0.89;
       recs.push('Alerta de consumo crítico: Desconecta electrodomésticos en modo espera y revisa la instalación eléctrica.');
       recs.push('Evita utilizar línea blanca durante el horario pico (18:00 - 22:00).');
     } else if (data.consumo_kwh > 200) {
-      cat = 'Moderado';
-      prob = 0.81;
+      cat = 'Moderado'; prob = 0.81;
       recs.push('Optimiza la iluminación cambiando bombillas tradicionales a tecnología LED.');
       recs.push('Aprovecha la luz natural y programa termostatos o sistemas de climatización.');
     } else {
@@ -78,7 +72,25 @@ export const apiService = {
       probabilidad: prob,
       costo_estimado_mensual: costo,
       recomendaciones: recs,
-      fecha: new Date().toISOString()
+      fecha: new Date().toISOString(),
+      moneda: data.moneda,
+      simboloMoneda: data.simboloMoneda,
+      consumo_kwh: data.consumo_kwh,
+      tipo_inmueble: data.tipo_inmueble,
+      cantidad_equipos: data.cantidad_equipos,
+      uso_horario_pico: data.uso_horario_pico,
+      horas_alto_consumo: data.horas_alto_consumo,
+      region: data.region,
+      request: {
+        region: data.region,
+        consumo_kwh: data.consumo_kwh,
+        uso_horario_pico: data.uso_horario_pico,
+        cantidad_equipos: data.cantidad_equipos,
+        tipo_inmueble: data.tipo_inmueble,
+        horas_alto_consumo: data.horas_alto_consumo,
+        moneda: data.moneda,
+        simboloMoneda: data.simboloMoneda,
+      }
     };
   },
 
