@@ -60,7 +60,7 @@ export const CountryProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const formatMoney = (amount: number): string => {
     const curr = CURRENCIES[moneda] || CURRENCIES.CLP;
-    return `${curr.symbol} ${amount.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `${curr.symbol} ${Math.round(amount).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   const convertirDesdeBase = (baseCost: number): number => convertFromBaseCost(baseCost, moneda);

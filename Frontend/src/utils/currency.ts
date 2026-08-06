@@ -20,22 +20,22 @@ export const CURRENCIES: Record<string, CurrencyConfig> = {
 /** Convierte costo base ML al tipo de cambio de la moneda seleccionada */
 export const convertFromBaseCost = (baseCost: number, currencyCode: string = 'CLP'): number => {
   const curr = CURRENCIES[currencyCode] || CURRENCIES.CLP;
-  return Math.round(baseCost * curr.exchangeRateFromBase * 100) / 100;
+  return Math.round(baseCost * curr.exchangeRateFromBase);
 };
 
-/** Formatea un monto con símbolo de moneda y separadores según locale del país */
+/** Formatea un monto con símbolo de moneda y separadores según locale del país (sin decimales) */
 export const formatMoney = (amount: number, currencyCode?: string, symbol?: string): string => {
   const code = currencyCode && CURRENCIES[currencyCode] ? currencyCode : 'CLP';
   const curr = CURRENCIES[code];
   const sym = symbol || curr.symbol;
-  return `${sym} ${amount.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${sym} ${Math.round(amount).toLocaleString('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 };
 
-/** Formatea un monto usando el locale correcto del país para números y moneda */
+/** Formatea un monto usando el locale correcto del país para números y moneda (sin decimales) */
 export const formatMoneyLocale = (amount: number, currencyCode: string, locale: string): string => {
   const curr = CURRENCIES[currencyCode] || CURRENCIES.CLP;
   const loc = locale || 'es-CL';
-  return `${curr.symbol} ${amount.toLocaleString(loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${curr.symbol} ${Math.round(amount).toLocaleString(loc, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 };
 
 /** Formatea una fecha según el locale del país */

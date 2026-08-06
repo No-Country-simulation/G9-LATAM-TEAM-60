@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { History, Download, Search, RefreshCw, ExternalLink, FileText, FileSpreadsheet } from 'lucide-react';
 import type { AnalisisResponse } from '../types';
 import { apiService } from '../services/api';
@@ -66,12 +66,12 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
         `"${i.identificador || ''}"`,
         `"${i.categoria || ''}"`,
         `"${(i.probabilidad * 100).toFixed(1)}%"`,
-        `"${paisConfig.simboloMoneda} ${costo.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"`,
-        i.request ? `"${i.request.consumo_kwh} kWh"` : `"${naLabel}"`,
-        i.request ? `"${i.request.tipo_inmueble}"` : `"${naLabel}"`,
-        i.request ? `"${i.request.cantidad_equipos}"` : `"${naLabel}"`,
-        i.request ? `"${i.request.uso_horario_pico ? yesLabel : noLabel}"` : `"${naLabel}"`,
-        i.request ? `"${i.request.region}"` : '"Centro"',
+        `"${paisConfig.simboloMoneda} ${Math.round(costo).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}"`,
+        i.request ? `"${i.request.consumo_kwh} kWh"` : i.consumo_kwh ? `"${i.consumo_kwh} kWh"` : `"${naLabel}"`,
+        i.request ? `"${i.request.tipo_inmueble}"` : i.tipo_inmueble ? `"${i.tipo_inmueble}"` : `"${naLabel}"`,
+        i.request ? `"${i.request.cantidad_equipos}"` : i.cantidad_equipos ? `"${i.cantidad_equipos}"` : `"${naLabel}"`,
+        i.request ? `"${i.request.uso_horario_pico ? yesLabel : noLabel}"` : i.uso_horario_pico !== undefined ? `"${i.uso_horario_pico ? yesLabel : noLabel}"` : `"${naLabel}"`,
+        i.request ? `"${i.request.region}"` : i.region ? `"${i.region}"` : '"Centro"',
         i.recomendaciones ? `"${i.recomendaciones.join('; ').replace(/"/g, '""')}"` : '""',
         `"${formatDate(i.fecha, { dateStyle: 'short', timeStyle: 'short' })}"`,
       ].join(';');
@@ -94,7 +94,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
 
     const rowsHtml = list.map((i, idx) => {
       const costo = convertirDesdeBase(i.costo_estimado_mensual);
-      const costoStr = `${paisConfig.simboloMoneda} ${costo.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const costoStr = `${paisConfig.simboloMoneda} ${Math.round(costo).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
       return `
       <tr style="background-color: ${idx % 2 === 0 ? '#f3f7f5' : '#e6ede9'};">
         <td style="border: 1px solid #cbdad3; padding: 8px; font-family: monospace; font-weight: bold;">${i.identificador}</td>

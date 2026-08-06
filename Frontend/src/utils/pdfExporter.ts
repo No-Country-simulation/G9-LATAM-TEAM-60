@@ -22,15 +22,22 @@ export const generarComprobantePDF = (analisis: AnalisisResponse) => {
   const tr = TRANSLATIONS[lang] || TRANSLATIONS.es;
   const t = (key: string) => tr[key] || TRANSLATIONS.es[key] || key;
 
-  // Moneda y costo
+  // Moneda y costo (sin decimales)
   const monedaCode = paisConfig.moneda;
   const curr = CURRENCIES[monedaCode] || CURRENCIES.CLP;
   const costoBase = analisis.costo_estimado_mensual;
-  const costoConvertido = convertFromBaseCost(costoBase, monedaCode);
-  const costoStr = `${curr.symbol} ${costoConvertido.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const costoConvertido = Math.round(convertFromBaseCost(costoBase, monedaCode));
+  const costoStr = `${curr.symbol} ${costoConvertido.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+
+  // Parámetros capturados de la simulación
+  const consumoKwh = analisis.consumo_kwh ?? analisis.request?.consumo_kwh ?? 240;
+  const tipoInmueble = analisis.tipo_inmueble ?? analisis.request?.tipo_inmueble ?? 'Casa';
+  const cantidadEquipos = analisis.cantidad_equipos ?? analisis.request?.cantidad_equipos ?? 6;
+  const usoHorarioPico = (analisis.uso_horario_pico ?? analisis.request?.uso_horario_pico) ?? false;
+  const horasAltoConsumo = analisis.horas_alto_consumo ?? analisis.request?.horas_alto_consumo ?? 4;
+  const region = analisis.region ?? analisis.request?.region ?? 'Centro';
 
   // CO2
-  const consumoKwh = analisis.request?.consumo_kwh ?? 240;
   const co2Total = Math.round(consumoKwh * paisConfig.factorCO2 * 10) / 10;
   const co2Str = `${co2Total.toLocaleString(locale)} ${paisConfig.unidad}`;
 
@@ -294,35 +301,40 @@ export const generarComprobantePDF = (analisis: AnalisisResponse) => {
         <table class="table-custom">
           <thead>
             <tr>
-              <th>${t('pdf.inputData')}</th>
-              <th>${t('pdf.consumption')}</th>
-              <th>${t('pdf.date')}</th>
+              <th>Parámetro Evaluado</th>
+              <th>Valor Registrado</th>
+              <th>Detalle / Referencia</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>${t('pdf.consumption')}</td>
-              <td><strong>${analisis.request?.consumo_kwh ?? 240} kWh</strong></td>
+              <td><strong>${consumoKwh} kWh</strong></td>
               <td>Base IA 0.75 R$/kWh × ${monedaCode}</td>
             </tr>
             <tr>
               <td>${t('pdf.propertyType')}</td>
-              <td><strong>${analisis.request?.tipo_inmueble ?? 'Casa'}</strong></td>
-              <td>—</td>
+              <td><strong>${tipoInmueble}</strong></td>
+              <td>Sector Residencial / Comercial</td>
             </tr>
             <tr>
               <td>${t('pdf.appliances')}</td>
-              <td><strong>${analisis.request?.cantidad_equipos ?? '6'}</strong></td>
-              <td>—</td>
+              <td><strong>${cantidadEquipos}</strong></td>
+              <td>Demanda Simultánea</td>
+            </tr>
+            <tr>
+              <td>${t('pdf.highConsumptionHours')}</td>
+              <td><strong>${horasAltoConsumo} hrs/día</strong></td>
+              <td>Patrón Diario</td>
             </tr>
             <tr>
               <td>${t('pdf.peakHours')}</td>
-              <td><strong>${analisis.request?.uso_horario_pico ? t('pdf.yes') : t('pdf.no')}</strong></td>
-              <td>—</td>
+              <td><strong>${usoHorarioPico ? t('pdf.yes') : t('pdf.no')}</strong></td>
+              <td>Tarifa Alta Demanda (18h-22h)</td>
             </tr>
             <tr>
               <td>${t('pdf.region')}</td>
-              <td><strong>${analisis.request?.region ?? 'Centro'}</strong></td>
+              <td><strong>${region}</strong></td>
               <td>${paisConfig.bandera} ${paisConfig.nombre}</td>
             </tr>
           </tbody>
