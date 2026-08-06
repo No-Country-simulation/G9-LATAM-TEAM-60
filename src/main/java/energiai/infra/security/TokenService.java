@@ -27,7 +27,7 @@ public class TokenService {
                     .withSubject(user.getUsername())
                     .withExpiresAt(ExpiryDate())
                     .sign(algorithm);
-        } catch (JWTCreationException e){
+        } catch (JWTCreationException e) {
             throw new RuntimeException("Error al crear el token de seguridad \n" + e.getMessage());
         }
     }
@@ -37,24 +37,20 @@ public class TokenService {
     }
 
     public String getSubject(String token) {
-        if (token == null) {
-            throw new RuntimeException();
+        if (token == null || token.isBlank()) {
+            return null;
         }
 
-        DecodedJWT verifier = null;
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            verifier = JWT.require(algorithm)
+            DecodedJWT verifier = JWT.require(algorithm)
                     .withIssuer("EnergiAI")
                     .build()
                     .verify(token);
-        } catch (JWTVerificationException e) {
-            System.out.println("Ocurrió un error mientras se verificaba el token de seguridad \n" + e.getMessage());
-        }
 
-        if (verifier.getSubject() == null) {
-            throw new RuntimeException();
+            return verifier.getSubject();
+        } catch (JWTVerificationException e) {
+            return null;
         }
-        return verifier.getSubject();
     }
 }

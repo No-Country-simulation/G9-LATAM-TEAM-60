@@ -24,13 +24,19 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var authHeader = request.getHeader("Authorization");
-        if (authHeader != null){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             var token = authHeader.replace("Bearer ", "");
-            var userName = tokenService.getSubject(token);
-            if (userName != null) {
-                var user = userRepository.findByUsername(userName);
-                var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(auth);
+            try {
+                var userName = tokenService.getSubject(token);
+                if (userName != null) {
+                    var user = userRepository.findByUsername(userName);
+                    if (user != null) {
+                        var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
+                }
+            } catch (Exception e) {
+                // Token inválido o de sesión anterior: se ignora para permitir rutas públicas
             }
         }
         filterChain.doFilter(request, response);
