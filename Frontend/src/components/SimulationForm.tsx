@@ -72,9 +72,9 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{t('sim.subtitle')}</p>
         </div>
         {/* Badge de País Activo */}
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', background: 'var(--badge-success-bg)', border: '1px solid var(--border-color)', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-emerald-600)', flexShrink: 0 }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', background: 'var(--badge-success-bg)', border: '1px solid var(--border-color)', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-emerald-600)', flexShrink: 0, whiteSpace: 'nowrap' }}>
           <span>{paisConfig.bandera}</span>
-          <span>{paisConfig.simboloMoneda} · {paisConfig.moneda}</span>
+          <span>{paisConfig.nombre} · {paisConfig.moneda}</span>
         </div>
       </div>
 

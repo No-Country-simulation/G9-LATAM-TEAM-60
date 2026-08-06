@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Activity, DollarSign, Zap, Users, RefreshCw, AlertTriangle, CheckCircle2, Leaf, PiggyBank, ShieldCheck, TreePine, Car, Smartphone, Info } from 'lucide-react';
 import type { DashboardStats, AnalisisResponse } from '../types';
@@ -87,9 +87,9 @@ export const DashboardView: React.FC<{ onSelectAnalisis?: (a: AnalisisResponse) 
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           {/* Badge país activo (reemplaza el selector de moneda) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--badge-success-bg)', border: '1px solid var(--badge-success-border)', borderRadius: '20px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-emerald-600)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--badge-success-bg)', border: '1px solid var(--badge-success-border)', borderRadius: '20px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-emerald-600)', whiteSpace: 'nowrap' }}>
             <span>{paisConfig.bandera}</span>
-            <span>{paisConfig.moneda}</span>
+            <span>{paisConfig.nombre} · {paisConfig.moneda}</span>
           </div>
           <button onClick={loadData} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
             <RefreshCw size={15} /> {t('dash.refresh')}

@@ -72,16 +72,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onOpenAuth, onGoLandi
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          padding: '6px 12px',
+          padding: '4px 10px',
           borderRadius: '20px',
           background: 'var(--badge-success-bg)',
           border: '1px solid var(--border-color)',
-          fontSize: '0.8rem',
+          fontSize: '0.78rem',
           fontWeight: 700,
-          color: 'var(--color-emerald-600)'
+          color: 'var(--color-emerald-600)',
+          whiteSpace: 'nowrap',
+          flexShrink: 0
         }} title={`País configurado: ${paisConfig.nombre} (${paisConfig.moneda})`}>
           <span>{paisConfig.bandera}</span>
-          <span>{paisConfig.codigo} | {paisConfig.simboloMoneda}</span>
+          <span>{paisConfig.nombre} · {paisConfig.moneda}</span>
         </div>
         {/* Toggle Modo Claro / Oscuro */}
         <button
