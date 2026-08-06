@@ -481,6 +481,15 @@ h1, h2, h3, h4, h5, h6 {
   .auth-btn-text-desktop {
     display: none !important;
   }
+  .country-selector-header-btn {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .saas-subtitle-desktop {
+    display: none !important;
+  }
 }
 
 @media (max-width: 768px) {

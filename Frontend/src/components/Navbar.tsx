@@ -99,7 +99,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onOpenAuth, onGoLandi
         <div ref={countryDropdownRef} style={{ position: 'relative' }}>
           <button
             onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
-            className="btn btn-secondary"
+            className="btn btn-secondary country-selector-header-btn"
             style={{
               padding: '5px 12px',
               borderRadius: '20px',

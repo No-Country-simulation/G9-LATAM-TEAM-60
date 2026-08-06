@@ -50,29 +50,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
         top: 0,
         zIndex: 50,
         background: 'var(--bg-glass)',
-        backdropFilter: 'blur(12px)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border-color)',
-        padding: '14px 24px',
+        padding: '12px 16px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        maxWidth: '100vw',
+        boxSizing: 'border-box',
+        gap: '8px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <div style={{ background: 'var(--color-emerald-500)', padding: '8px', borderRadius: '10px', display: 'flex' }}>
-            <Zap size={20} color="#ffffff" fill="#ffffff" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <div style={{ background: 'var(--color-emerald-500)', padding: '7px', borderRadius: '10px', display: 'flex' }}>
+            <Zap size={18} color="#ffffff" fill="#ffffff" />
           </div>
           <div>
-            <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.5px' }}>
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
               Energi<span className="gradient-heading">AI</span>
             </span>
-            <span style={{ display: 'block', fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
+            <span className="saas-subtitle-desktop" style={{ display: 'block', fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
               Enterprise SaaS
             </span>
           </div>
         </div>
 
         {/* Links de Navegación Desktop */}
-        <nav className="nav-links-desktop" style={{ display: 'flex', gap: '24px', fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+        <nav className="nav-links-desktop" style={{ display: 'flex', gap: '20px', fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
           <a href="#problema" style={{ color: 'inherit' }}>{t('landing.nav.whatIs')}</a>
           <a href="#como-funciona" style={{ color: 'inherit' }}>{t('landing.nav.howItWorks')}</a>
           <a href="#beneficios" style={{ color: 'inherit' }}>{t('landing.nav.benefits')}</a>
@@ -81,20 +85,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
         </nav>
 
         {/* Acciones & Responsive Burger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           {/* Selector de País e Idioma Flotante */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-              className="btn btn-secondary"
+              className="btn btn-secondary country-selector-header-btn"
               style={{
-                padding: '5px 12px',
+                padding: '5px 10px',
                 borderRadius: '20px',
                 fontSize: '0.78rem',
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '5px',
                 whiteSpace: 'nowrap',
                 color: 'var(--color-emerald-600)',
                 background: 'var(--badge-success-bg)',
@@ -104,9 +108,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
               title="Cambiar País / Idioma"
             >
               <Globe size={14} color="var(--color-emerald-500)" />
-              <span className="country-fullname-desktop">{paisConfig.bandera} {paisConfig.nombre} · {paisConfig.moneda}</span>
+              <span className="country-fullname-desktop">{paisConfig.bandera} {paisConfig.nombre} ({paisConfig.moneda})</span>
               <span className="country-code-mobile" style={{ display: 'none' }}>{paisConfig.bandera} {paisConfig.moneda}</span>
-              <ChevronDown size={13} style={{ opacity: 0.7 }} />
+              <ChevronDown size={12} style={{ opacity: 0.7 }} />
             </button>
 
             {langDropdownOpen && (
@@ -114,7 +118,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
                 position: 'absolute',
                 top: '120%',
                 right: 0,
-                width: '230px',
+                width: '220px',
                 zIndex: 100,
                 padding: '8px',
                 boxShadow: 'var(--shadow-lg)',
@@ -166,71 +170,43 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
           <button
             onClick={toggleTheme}
             className="btn btn-secondary"
-            style={{ padding: '7px 9px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ padding: '6px 8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             title={`Cambiar a modo ${theme === 'light' ? 'oscuro' : 'claro'}`}
           >
-            {theme === 'light' ? <Moon size={17} color="var(--text-secondary)" /> : <Sun size={17} color="#f59e0b" />}
+            {theme === 'light' ? <Moon size={16} color="var(--text-secondary)" /> : <Sun size={16} color="#f59e0b" />}
           </button>
 
           {/* Botón Ingresar */}
-          <button onClick={onOpenAuth} className="btn btn-primary" style={{ padding: '6px 14px', fontSize: '0.8rem', whiteSpace: 'nowrap', borderRadius: '20px' }}>
-            <span className="auth-btn-text-desktop">{t('auth.login')}</span>
-            <span className="country-code-mobile" style={{ display: 'none' }}>{t('auth.login')}</span>
+          <button onClick={onOpenAuth} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: '0.78rem', whiteSpace: 'nowrap', borderRadius: '20px' }}>
+            {t('auth.login')}
           </button>
 
           {/* Botón Menú Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="btn btn-secondary landing-hamburger-btn"
-            style={{ padding: '7px 9px', borderRadius: '10px' }}
+            style={{ padding: '6px 8px', borderRadius: '10px' }}
             title="Menú móvil"
           >
-            {mobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </header>
 
       {/* Menú Móvil Desplegable */}
       {mobileMenuOpen && (
-        <div className="saas-card" style={{ position: 'fixed', top: '64px', left: '16px', right: '16px', zIndex: 45, padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', boxShadow: 'var(--shadow-lg)' }}>
-          <a href="#problema" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.whatIs')}</a>
-          <a href="#como-funciona" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.howItWorks')}</a>
-          <a href="#beneficios" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.benefits')}</a>
-          <a href="#tecnologias" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.tech')}</a>
-          <a href="#faq" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.faq')}</a>
+        <div className="saas-card animate-fade-in" style={{ position: 'fixed', top: '58px', left: '12px', right: '12px', zIndex: 45, padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-elevated)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+          <a href="#problema" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', padding: '6px 0' }}>{t('landing.nav.whatIs')}</a>
+          <a href="#como-funciona" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', padding: '6px 0' }}>{t('landing.nav.howItWorks')}</a>
+          <a href="#beneficios" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', padding: '6px 0' }}>{t('landing.nav.benefits')}</a>
+          <a href="#tecnologias" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', padding: '6px 0' }}>{t('landing.nav.tech')}</a>
+          <a href="#faq" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', padding: '6px 0' }}>{t('landing.nav.faq')}</a>
           
-          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
-              {t('country.select')}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              {Object.values(ENERGIA_POR_PAIS).map((c) => (
-                <button
-                  key={c.codigo}
-                  onClick={() => {
-                    setPais(c.codigo);
-                    setMobileMenuOpen(false);
-                  }}
-                  style={{
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    background: pais === c.codigo ? 'var(--badge-success-bg)' : 'var(--bg-surface)',
-                    color: pais === c.codigo ? 'var(--color-emerald-600)' : 'var(--text-primary)',
-                    fontWeight: pais === c.codigo ? 700 : 500,
-                    fontSize: '0.8rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  <span>{c.bandera}</span>
-                  <span>{c.nombre}</span>
-                </button>
-              ))}
-            </div>
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>País: <strong>{paisConfig.bandera} {paisConfig.nombre} ({paisConfig.moneda})</strong></span>
+            <button onClick={onOpenAuth} className="btn btn-primary" style={{ padding: '6px 14px', fontSize: '0.8rem', borderRadius: '20px' }}>
+              {t('auth.login')}
+            </button>
           </div>
         </div>
       )}

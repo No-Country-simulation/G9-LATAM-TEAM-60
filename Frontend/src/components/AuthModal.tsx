@@ -47,64 +47,74 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   return (
     <div style={{
       position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
+      inset: 0,
       background: 'rgba(15, 23, 42, 0.65)',
       backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
       zIndex: 100,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '24px'
+      padding: '16px',
+      overflowY: 'auto'
     }}>
-      <div className="saas-card animate-fade-in" style={{
-        maxWidth: '460px',
-        width: '100%',
-        padding: '32px',
-        position: 'relative',
-        boxShadow: 'var(--shadow-lg)',
-        background: 'var(--bg-surface)'
-      }}>
+      <div 
+        className="saas-card animate-fade-in" 
+        style={{
+          maxWidth: '440px',
+          width: '100%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          padding: '28px 24px',
+          position: 'relative',
+          boxShadow: 'var(--shadow-lg)',
+          background: 'var(--bg-elevated)',
+          borderRadius: '20px',
+          border: '1px solid var(--border-color)'
+        }}
+      >
         <button
           onClick={onClose}
           style={{
             position: 'absolute',
-            top: '20px',
-            right: '20px',
+            top: '16px',
+            right: '16px',
             background: 'var(--bg-primary)',
             border: '1px solid var(--border-color)',
             color: 'var(--text-muted)',
-            width: '32px',
-            height: '32px',
+            width: '30px',
+            height: '30px',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            zIndex: 10
           }}
+          title="Cerrar"
         >
-          <X size={18} />
+          <X size={16} />
         </button>
 
-
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800 }}>
+        <div style={{ textAlign: 'center', marginBottom: '18px', paddingRight: '20px' }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>
             {isRegister ? 'Crear Cuenta EnergiAI' : 'Iniciar Sesión'}
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>
             Acceso corporativo a métricas e inferencia energéticas.
           </p>
         </div>
 
         {error && (
-          <div style={{ background: 'var(--badge-error-bg)', border: '1px solid var(--badge-error-border)', padding: '10px 14px', borderRadius: '10px', color: 'var(--badge-error-text)', fontSize: '0.85rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertCircle size={16} /> {error}
+          <div style={{ background: 'var(--badge-error-bg)', border: '1px solid var(--badge-error-border)', padding: '10px 12px', borderRadius: '10px', color: 'var(--badge-error-text)', fontSize: '0.8rem', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={15} style={{ flexShrink: 0 }} /> <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {isRegister && (
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '5px' }}>
                 Nombre Completo
               </label>
               <div style={{ position: 'relative' }}>
@@ -116,14 +126,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
                   className="saas-input"
-                  style={{ paddingLeft: '38px' }}
+                  style={{ paddingLeft: '38px', width: '100%', fontSize: '0.88rem' }}
                 />
               </div>
             </div>
           )}
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '5px' }}>
               Correo Electrónico
             </label>
             <div style={{ position: 'relative' }}>
@@ -135,13 +145,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="saas-input"
-                style={{ paddingLeft: '38px' }}
+                style={{ paddingLeft: '38px', width: '100%', fontSize: '0.88rem' }}
               />
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '5px' }}>
               Contraseña
             </label>
             <div style={{ position: 'relative' }}>
@@ -153,7 +163,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 value={pass}
                 onChange={(e) => setPass(e.target.value)}
                 className="saas-input"
-                style={{ paddingLeft: '38px', paddingRight: '38px' }}
+                style={{ paddingLeft: '38px', paddingRight: '38px', width: '100%', fontSize: '0.88rem' }}
               />
               <button
                 type="button"
@@ -166,7 +176,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Recordar Sesión & Recuperar Contraseña */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: 'var(--text-secondary)', flexWrap: 'wrap', gap: '6px' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
               <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
               Recordar sesión
@@ -180,13 +190,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             type="submit"
             disabled={loading}
             className="btn btn-primary"
-            style={{ width: '100%', padding: '12px', marginTop: '6px', fontSize: '0.95rem' }}
+            style={{ width: '100%', padding: '10px 16px', marginTop: '4px', fontSize: '0.9rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
             {loading ? 'Procesando...' : (isRegister ? 'Registrar y Continuar' : 'Ingresar al Sistema')} <ArrowRight size={16} />
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+        <div style={{ textAlign: 'center', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--border-color)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
           {isRegister ? '¿Ya tienes una cuenta?' : '¿No tienes cuenta?'}
           <button
             type="button"
