@@ -1,5 +1,7 @@
 import type { AnalisisResponse } from '../types';
-import { formatMoney } from './currency';
+import { ENERGIA_POR_PAIS } from './country';
+import { TRANSLATIONS } from './i18n';
+import { CURRENCIES, convertFromBaseCost } from './currency';
 
 /**
  * Genera un Comprobante Oficial de Diagnóstico Energético en formato PDF/Imprimible
@@ -8,13 +10,33 @@ import { formatMoney } from './currency';
 export const generarComprobantePDF = (analisis: AnalisisResponse) => {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
-    alert('Por favor permite las ventanas emergentes (popups) para descargar el comprobante PDF.');
+    alert('Please allow pop-ups / Permite las ventanas emergentes para descargar el comprobante PDF.');
     return;
   }
 
-  const fechaFormateada = analisis.fecha 
-    ? new Date(analisis.fecha).toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' })
-    : new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' });
+  // Determinar país y traducciones
+  const savedPais = localStorage.getItem('energiAI_pais') || 'CL';
+  const paisConfig = ENERGIA_POR_PAIS[savedPais] || ENERGIA_POR_PAIS.CL;
+  const locale = paisConfig.locale || 'es-CL';
+  const lang = paisConfig.idioma || 'es';
+  const tr = TRANSLATIONS[lang] || TRANSLATIONS.es;
+  const t = (key: string) => tr[key] || TRANSLATIONS.es[key] || key;
+
+  // Moneda y costo
+  const monedaCode = paisConfig.moneda;
+  const curr = CURRENCIES[monedaCode] || CURRENCIES.CLP;
+  const costoBase = analisis.costo_estimado_mensual;
+  const costoConvertido = convertFromBaseCost(costoBase, monedaCode);
+  const costoStr = `${curr.symbol} ${costoConvertido.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // CO2
+  const consumoKwh = analisis.request?.consumo_kwh ?? 240;
+  const co2Total = Math.round(consumoKwh * paisConfig.factorCO2 * 10) / 10;
+  const co2Str = `${co2Total.toLocaleString(locale)} ${paisConfig.unidad}`;
+
+  const fechaFormateada = analisis.fecha
+    ? new Date(analisis.fecha).toLocaleString(locale, { dateStyle: 'full', timeStyle: 'medium' })
+    : new Date().toLocaleString(locale, { dateStyle: 'full', timeStyle: 'medium' });
 
   const isEfi = analisis.categoria.toLowerCase().includes('efi');
   const isMod = analisis.categoria.toLowerCase().includes('mod');
@@ -24,10 +46,10 @@ export const generarComprobantePDF = (analisis: AnalisisResponse) => {
 
   const htmlContent = `
     <!DOCTYPE html>
-    <html lang="es">
+    <html lang="${lang}">
     <head>
       <meta charset="UTF-8">
-      <title>Comprobante_EnergiaAI_${analisis.identificador}.pdf</title>
+      <title>${t('pdf.certified')}_${analisis.identificador}.pdf</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@600;800&display=swap');
         
@@ -242,7 +264,7 @@ export const generarComprobantePDF = (analisis: AnalisisResponse) => {
             <div class="brand-title">Energi<span>AI</span></div>
           </div>
           <div class="doc-type">
-            <div class="doc-title">Comprobante de Inferencia ML</div>
+            <div class="doc-title">${t('pdf.certified')}</div>
             <div class="doc-id">${analisis.identificador}</div>
           </div>
         </div>
@@ -250,77 +272,81 @@ export const generarComprobantePDF = (analisis: AnalisisResponse) => {
         <!-- KPI Resumen -->
         <div class="kpi-banner">
           <div class="kpi-item">
-            <span class="kpi-label">Categoría Diagnosticada</span>
+            <span class="kpi-label">${t('pdf.category')}</span>
             <span class="kpi-val badge-status">${analisis.categoria}</span>
           </div>
           <div class="kpi-item">
-            <span class="kpi-label">Precisión del Modelo ML</span>
+            <span class="kpi-label">${t('pdf.confidence')}</span>
             <span class="kpi-val">${(analisis.probabilidad * 100).toFixed(1)}%</span>
           </div>
           <div class="kpi-item">
-            <span class="kpi-label">Costo Estimado Mensual</span>
-            <span class="kpi-val">${formatMoney(analisis.costo_estimado_mensual, analisis.moneda || analisis.request?.moneda, analisis.simboloMoneda || analisis.request?.simboloMoneda)}</span>
+            <span class="kpi-label">${t('pdf.monthlyCost')} (${monedaCode})</span>
+            <span class="kpi-val">${costoStr}</span>
+          </div>
+          <div class="kpi-item" style="grid-column: span 3; border-top: 1px solid ${badgeColor}30; padding-top: 12px; margin-top: 4px;">
+            <span class="kpi-label">${t('pdf.co2')} — ${paisConfig.bandera} ${paisConfig.nombre}</span>
+            <span class="kpi-val" style="color: #10b981; font-size: 16px;">🌿 ${co2Str}</span>
           </div>
         </div>
 
         <!-- Parámetros Evaluados -->
-        <div class="section-title">📋 Parámetros de la Evaluación</div>
+        <div class="section-title">📋 ${t('pdf.inputData')}</div>
         <table class="table-custom">
           <thead>
             <tr>
-              <th>Parámetro Evaluado</th>
-              <th>Valor Registrado</th>
-              <th>Normativa Tarifaria</th>
+              <th>${t('pdf.inputData')}</th>
+              <th>${t('pdf.consumption')}</th>
+              <th>${t('pdf.date')}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Consumo Energético Mensual</td>
-              <td><strong>${analisis.request?.consumo_kwh ?? analisis.consumo_kwh ?? '240'} kWh</strong></td>
-              <td>Tarifa Base IA (0.75 R$/kWh) × Tipo Cambio ${analisis.moneda || analisis.request?.moneda || 'CLP'}</td>
+              <td>${t('pdf.consumption')}</td>
+              <td><strong>${analisis.request?.consumo_kwh ?? 240} kWh</strong></td>
+              <td>Base IA 0.75 R$/kWh × ${monedaCode}</td>
             </tr>
             <tr>
-              <td>Tipo de Inmueble</td>
-              <td><strong>${analisis.request?.tipo_inmueble ?? analisis.tipo_inmueble ?? 'Casa'}</strong></td>
-              <td>Sector Residencial / Comercial</td>
+              <td>${t('pdf.propertyType')}</td>
+              <td><strong>${analisis.request?.tipo_inmueble ?? 'Casa'}</strong></td>
+              <td>—</td>
             </tr>
             <tr>
-              <td>Electrodomésticos / Equipos</td>
-              <td><strong>${analisis.request?.cantidad_equipos ?? analisis.cantidad_equipos ?? '6'} Unidades</strong></td>
-              <td>Demanda Simultánea</td>
+              <td>${t('pdf.appliances')}</td>
+              <td><strong>${analisis.request?.cantidad_equipos ?? '6'}</strong></td>
+              <td>—</td>
             </tr>
             <tr>
-              <td>Uso en Horario Pico (18h - 22h)</td>
-              <td><strong>${(analisis.request?.uso_horario_pico ?? analisis.uso_horario_pico) ? 'SÍ (Pico Registrado)' : 'NO (Normal)'}</strong></td>
-              <td>Tarifa de Alta Demanda</td>
+              <td>${t('pdf.peakHours')}</td>
+              <td><strong>${analisis.request?.uso_horario_pico ? t('pdf.yes') : t('pdf.no')}</strong></td>
+              <td>—</td>
             </tr>
             <tr>
-              <td>Región Geográfica LATAM</td>
-              <td><strong>${analisis.request?.region ?? analisis.region ?? 'Centro'}</strong></td>
-              <td>Matriz Interconectada</td>
+              <td>${t('pdf.region')}</td>
+              <td><strong>${analisis.request?.region ?? 'Centro'}</strong></td>
+              <td>${paisConfig.bandera} ${paisConfig.nombre}</td>
             </tr>
           </tbody>
         </table>
 
         <!-- Recomendaciones Directivas -->
-        <div class="section-title">💡 Directivas de Optimización Energética</div>
+        <div class="section-title">💡 ${t('pdf.recommendations')}</div>
         <div class="rec-box">
           ${analisis.recomendaciones?.map(r => `
             <div class="rec-item">
               <span>⚡</span>
               <span>${r}</span>
             </div>
-          `).join('') || '<div class="rec-item">Sin recomendaciones especiales.</div>'}
+          `).join('') || `<div class="rec-item">${t('res.noRecommendations')}</div>`}
         </div>
 
         <!-- Footer Oficial -->
         <div class="footer">
           <div>
-            Emisión Oficial: <strong>${fechaFormateada}</strong><br>
-            Plataforma EnergiAI LATAM — Algoritmo Scikit-Learn (Regresión Logística / Random Forest)
+            ${t('pdf.date')}: <strong>${fechaFormateada}</strong><br>
+            ${t('pdf.poweredBy')}
           </div>
           <div class="verification-seal">
-            ✔ Autenticado por Oracle Cloud Infrastructure (OCI)
+            ✔ ${t('pdf.certified')} — OCI
           </div>
         </div>
       </div>

@@ -7,32 +7,44 @@ export interface CurrencyConfig {
 }
 
 /**
- * Mapeo de Conversión Directa de Monedas LATAM / Internacional:
- * Mantiene el modelo de Machine Learning intacto (Tarifa Base R$ 0.75 / kWh)
- * y convierte el resultado proyectado según los tipos de cambio oficiales actuales:
- * - 1 BRL = 183.19 CLP (Peso Chileno)
- * - 1 BRL = 292.36 ARS (Peso Argentino)
- * - 1 BRL = 1.0000 BRL (Real Brasileño Base ML)
- * - 1 BRL = 0.2000 USD (Dólar Estadounidense)
+ * Tipos de cambio: Base BRL 0.75/kWh → monedas LATAM
+ * 1 BRL = 183.19 CLP | 292.36 ARS | 1.0 BRL | 0.20 USD
  */
 export const CURRENCIES: Record<string, CurrencyConfig> = {
-  CLP: { code: 'CLP', name: 'Peso Chileno (CLP)', symbol: 'CLP $', flag: '🇨🇱', exchangeRateFromBase: 183.19 },
-  ARS: { code: 'ARS', name: 'Peso Argentino (ARS)', symbol: 'ARS $', flag: '🇦🇷', exchangeRateFromBase: 292.36 },
-  BRL: { code: 'BRL', name: 'Real Brasileño (BRL)', symbol: 'R$', flag: '🇧🇷', exchangeRateFromBase: 1.0 },
-  USD: { code: 'USD', name: 'Dólar US (USD)', symbol: 'US$', flag: '🇺🇸', exchangeRateFromBase: 0.20 },
+  CLP: { code: 'CLP', name: 'Peso Chileno (CLP)',    symbol: 'CLP $', flag: '🇨🇱', exchangeRateFromBase: 183.19 },
+  ARS: { code: 'ARS', name: 'Peso Argentino (ARS)',  symbol: 'ARS $', flag: '🇦🇷', exchangeRateFromBase: 292.36 },
+  BRL: { code: 'BRL', name: 'Real Brasileño (BRL)',  symbol: 'R$',    flag: '🇧🇷', exchangeRateFromBase: 1.0    },
+  USD: { code: 'USD', name: 'Dólar US (USD)',         symbol: 'US$',   flag: '🇺🇸', exchangeRateFromBase: 0.20   },
 };
 
-/**
- * Convierte el costo base del modelo ML al tipo de cambio de la moneda seleccionada.
- */
+/** Convierte costo base ML al tipo de cambio de la moneda seleccionada */
 export const convertFromBaseCost = (baseCost: number, currencyCode: string = 'CLP'): number => {
   const curr = CURRENCIES[currencyCode] || CURRENCIES.CLP;
   return Math.round(baseCost * curr.exchangeRateFromBase * 100) / 100;
 };
 
+/** Formatea un monto con símbolo de moneda y separadores según locale del país */
 export const formatMoney = (amount: number, currencyCode?: string, symbol?: string): string => {
   const code = currencyCode && CURRENCIES[currencyCode] ? currencyCode : 'CLP';
   const curr = CURRENCIES[code];
   const sym = symbol || curr.symbol;
   return `${sym} ${amount.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
+
+/** Formatea un monto usando el locale correcto del país para números y moneda */
+export const formatMoneyLocale = (amount: number, currencyCode: string, locale: string): string => {
+  const curr = CURRENCIES[currencyCode] || CURRENCIES.CLP;
+  const loc = locale || 'es-CL';
+  return `${curr.symbol} ${amount.toLocaleString(loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+/** Formatea una fecha según el locale del país */
+export const formatDateLocale = (date: string | Date | undefined | null, locale: string, opts?: Intl.DateTimeFormatOptions): string => {
+  if (!date) return '—';
+  try {
+    return new Date(date).toLocaleString(locale || 'es-CL', opts || { dateStyle: 'short', timeStyle: 'short' });
+  } catch {
+    return String(date);
+  }
+};
+
