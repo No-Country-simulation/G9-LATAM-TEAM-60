@@ -59,6 +59,13 @@
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-full: 9999px;
+
+  --ambient-orb-opacity: 0.35;
+  --grid-dot-color: rgba(16, 185, 129, 0.12);
+  --grid-pattern-opacity: 0.5;
+  --orb-emerald-color: radial-gradient(circle, rgba(16, 185, 129, 0.28) 0%, rgba(52, 211, 153, 0.08) 65%, transparent 100%);
+  --orb-cyan-color: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, rgba(56, 189, 248, 0.06) 65%, transparent 100%);
+  --orb-amber-color: radial-gradient(circle, rgba(245, 158, 11, 0.20) 0%, rgba(251, 191, 36, 0.05) 65%, transparent 100%);
 }
 
 /* Variables - Mode Oscuro (Sleek Obsidian SaaS) */
@@ -108,6 +115,13 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.7);
+
+  --ambient-orb-opacity: 0.55;
+  --grid-dot-color: rgba(16, 185, 129, 0.20);
+  --grid-pattern-opacity: 0.7;
+  --orb-emerald-color: radial-gradient(circle, rgba(16, 185, 129, 0.40) 0%, rgba(5, 150, 105, 0.12) 65%, transparent 100%);
+  --orb-cyan-color: radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, rgba(2, 132, 199, 0.10) 65%, transparent 100%);
+  --orb-amber-color: radial-gradient(circle, rgba(99, 102, 241, 0.30) 0%, rgba(79, 70, 229, 0.08) 65%, transparent 100%);
 }
 
 /* Reset y Base */
@@ -465,5 +479,93 @@ h1, h2, h3, h4, h5, h6 {
 
   .desktop-only-toggle {
     display: flex !important;
+  }
+}
+
+/* ==========================================================================
+   ANIMATED AMBIENT BACKGROUND SYSTEM
+   ========================================================================== */
+.ambient-orb.orb-emerald {
+  background: var(--orb-emerald-color);
+}
+.ambient-orb.orb-cyan {
+  background: var(--orb-cyan-color);
+}
+.ambient-orb.orb-amber {
+  background: var(--orb-amber-color);
+}
+
+@keyframes floatOrb1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(60px, 45px, 0) scale(1.12);
+  }
+  100% {
+    transform: translate3d(-30px, 80px, 0) scale(0.95);
+  }
+}
+
+@keyframes floatOrb2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-70px, -50px, 0) scale(1.15);
+  }
+  100% {
+    transform: translate3d(40px, -30px, 0) scale(0.9);
+  }
+}
+
+@keyframes floatOrb3 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  50% {
+    transform: translate3d(50px, -60px, 0) scale(1.18);
+  }
+  100% {
+    transform: translate3d(-50px, 30px, 0) scale(1);
+  }
+}
+
+/* Micro-Partículas de Energía Flotantes */
+.energy-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.energy-particles .particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-emerald-500);
+  box-shadow: 0 0 10px var(--color-emerald-500);
+  opacity: 0;
+  animation: floatParticle 16s ease-in-out infinite;
+}
+
+.energy-particles .p1 { top: 75%; left: 15%; width: 4px; height: 4px; animation-delay: 0s; }
+.energy-particles .p2 { top: 85%; left: 40%; width: 6px; height: 6px; animation-delay: 3s; animation-duration: 20s; }
+.energy-particles .p3 { top: 65%; left: 70%; width: 3px; height: 3px; animation-delay: 6s; animation-duration: 18s; }
+.energy-particles .p4 { top: 90%; left: 85%; width: 5px; height: 5px; animation-delay: 9s; animation-duration: 22s; }
+.energy-particles .p5 { top: 80%; left: 55%; width: 4px; height: 4px; animation-delay: 12s; animation-duration: 15s; }
+
+@keyframes floatParticle {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-400px) scale(1.2);
+    opacity: 0;
   }
 }

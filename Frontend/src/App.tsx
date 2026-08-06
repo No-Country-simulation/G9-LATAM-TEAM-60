@@ -11,6 +11,7 @@ import { HistoryView } from './components/HistoryView';
 import { ConfiguracionView } from './components/ConfiguracionView';
 import { ResultsModal } from './components/ResultsModal';
 import { AuthModal } from './components/AuthModal';
+import { AmbientBackground } from './components/AmbientBackground';
 import type { AnalisisResponse } from './types';
 import { Globe, ExternalLink, Lightbulb, Lock } from 'lucide-react';
 
@@ -50,18 +51,20 @@ const AppContent: React.FC = () => {
 
   if (isLanding && !user) {
     return (
-      <>
+      <div style={{ position: 'relative' }}>
+        <AmbientBackground />
         <LandingPage 
           onStartSimulation={handleStartSimulation} 
           onOpenAuth={() => setAuthOpen(true)} 
         />
         <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
-      </>
+      </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)', position: 'relative' }}>
+      <AmbientBackground />
       {/* Sidebar Colapsable con Drawer Flotante en Móviles */}
       <Sidebar 
         activeTab={activeTab} 
