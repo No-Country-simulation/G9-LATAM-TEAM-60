@@ -1,100 +1,382 @@
-# EnergiAI - Backend
+# ⚡ EnergiAI
 
-API REST desarrollada en Spring Boot para el proyecto **EnergiAI**, construido en el marco del Hackathon Oracle & Alura ONE (plataforma No Country). El sistema evalúa el consumo eléctrico de un usuario y genera recomendaciones de eficiencia energética, clasificando el consumo en tres categorías: `Eficiente`, `Moderado` e `Ineficiente`.
+> Plataforma inteligente para el análisis, clasificación y optimización del consumo energético residencial y comercial mediante Inteligencia Artificial y Ciencia de Datos.  
+> **Proyecto desarrollado por G9-LATAM-Team 60 para la Hackathon ONE G9 - LATAM.**
 
-Este backend actúa como capa pública de la API: recibe las solicitudes del frontend, gestiona autenticación/usuarios, persiste los análisis, y delega el cálculo de la clasificación a un microservicio interno de Data Science (Python/FastAPI).
+![Hackathon](https://img.shields.io/badge/Hackathon-ONE%20G9--LATAM-orange)
+![Team](https://img.shields.io/badge/Team-G9--LATAM--Team%2060-blue)
+![Version](https://img.shields.io/badge/version-1.0.0--MVP-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-green?logo=springboot)
+![React](https://img.shields.io/badge/React-18-blue?logo=react)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688?logo=fastapi)
+![Python](https://img.shields.io/badge/Python-3.12-yellow?logo=python)
 
-## Stack tecnológico
+---
 
-- **Java 17**
-- **Spring Boot 3.3.0** (Web, Data JPA, Security, Validation)
-- **PostgreSQL** + **Flyway** para migraciones
-- **JWT** (java-jwt / Auth0) para autenticación stateless
-- **Lombok**
-- **Docker** para despliegue
-- **OCI (Oracle Cloud Infrastructure)**: Compute para el despliegue, Object Storage para el modelo serializado de ML
+## 📑 Contenido
 
-## Arquitectura general
+- [⚡ Descripción y Propósito](#-descripción-y-propósito)
+- [✨ Funcionalidades Principales](#-funcionalidades-principales)
+- [🏗️ Arquitectura del Sistema](#️-arquitectura-del-sistema)
+- [🛠️ Tecnologías Principales](#️-tecnologías-principales)
+- [📂 Estructura del Proyecto](#-estructura-del-proyecto)
+- [⚙️ Instalación y Configuración](#️-instalación-y-configuración)
+- [🔌 API y Endpoints](#-api-y-endpoints)
+- [🤖 Inteligencia Artificial y Machine Learning](#-inteligencia-artificial-y-machine-learning)
+- [📊 Clasificación Energética y Métricas](#-clasificación-energética-y-métricas)
+- [🔄 Flujo Funcional del Sistema](#-flujo-funcional-del-sistema)
+- [📋 Gestión del Proyecto](#-gestión-del-proyecto)
+- [👥 Equipo de Desarrollo](#-equipo-de-desarrollo)
+- [📚 Documentación Adicional](#-documentación-adicional)
+- [📄 Licencia](#-licencia)
 
+---
+
+## ⚡ Descripción y Propósito
+
+### 🔴 El Problema
+Gran parte de los hogares y pequeños establecimientos comerciales en América Latina reciben facturas de energía eléctrica elevadas sin contar con visibilidad sobre qué hábitos o electrodomésticos generan el mayor desperdicio. La falta de métricas claras y comprensibles impide a los consumidores tomar decisiones informadas para optimizar su consumo y reducir sus costos operativos.
+
+### 🟢 La Solución
+**EnergiAI** transforma los datos de consumo mensual y hábitos de uso en información estratégica mediante un microservicio de **Machine Learning (Random Forest / Regresión Logística)**. La plataforma evalúa parámetros como consumo en kWh, horas de uso en horario pico, cantidad de equipos y ubicación geográfica para generar un dictamen del perfil energético, estimaciones financieras multi-moneda (CLP, ARS, BRL, USD) y recomendaciones de optimización personalizadas.
+
+### 🎯 Objetivo Principal
+Proveer un Producto Mínimo Viable (MVP) completo y funcional capaz de analizar patrones de consumo, clasificar la eficiencia energética en tres categorías (**Eficiente**, **Moderado**, **Ineficiente**), calcular la huella de carbono equivalente y ofrecer reportes exportables en PDF.
+
+---
+
+## ✨ Funcionalidades Principales
+
+### 👤 Gestión de Usuarios y Autenticación
+- Registro de usuarios con validación de datos.
+- Autenticación mediante tokens JWT (JSON Web Tokens) firmados con algoritmos HMAC256.
+- Control de sesión persistente con renovación de credenciales.
+
+### 🤖 Diagnóstico y Simulación Energética con IA
+- Formulario interactivo con sliders dinámicos para captura de parámetros (kWh, equipos, horas continuas, horario pico y zona climática).
+- Evaluación en tiempo real conectada al microservicio FastAPI ML en el puerto `8000` con resiliencia y fallback offline local.
+- Cálculo de nivel de confianza de la predicción y dictamen categorizado.
+
+### 💰 Conversión Financiera Multi-Moneda LATAM
+- Conversión dinámica de costos proyectados basada en la tarifa de referencia normada ($0.75 / kWh).
+- Soporte para **CLP** (Peso Chileno), **ARS** (Peso Argentino), **BRL** (Real Brasileño) y **USD** (Dólar Estadounidense).
+
+### 🌿 Calculadora e Interpretación de Huella de Carbono
+- Factor de emisión normado de 0.385 kg CO₂ / kWh.
+- Muestreo de equivalencias ecológicas interactivas:
+  - 🌲 **Árboles necesarios** para neutralizar las emisiones.
+  - 🚗 **Kilómetros recorridos** en un vehículo a gasolina promedio.
+  - 📱 **Cargas completas** de smartphone equivalentes.
+
+### 📈 Dashboard Analytics e Historial
+- Métricas consolidadas: total de análisis realizados, consumo promedio en kWh y gasto total acumulado.
+- Historial dinámico de consultas persistido en base de datos H2 / PostgreSQL.
+- Exportación de comprobantes de diagnóstico energético en formato **PDF** (`jsPDF` + `html2canvas`).
+
+---
+
+## 🏗️ Arquitectura del Sistema
+
+EnergiAI sigue una arquitectura cliente-servidor distribuida y desacoplada, compuesta por tres capas principales optimizadas para despliegue en **Oracle Cloud Infrastructure (OCI)**:
+
+```mermaid
+flowchart LR
+    subgraph Cliente["💻 Capa de Presentación (Frontend)"]
+        UI["React 18 + TypeScript\n(Vite Dev / NGINX - Port 5173)"]
+    end
+
+    subgraph BackendApp["☕ Capa de Negocio (Backend)"]
+        SB["Spring Boot 3.3.0 REST API\n(Java 21 - Port 8080)"]
+        SEC["Spring Security + JWT"]
+        JPA["Spring Data JPA / Hibernate"]
+    end
+
+    subgraph DataScience["🐍 Capa de Inteligencia Artificial (ML Service)"]
+        FA["FastAPI + Uvicorn\n(Python 3.12 - Port 8000)"]
+        RF["Random Forest Pipeline\n(Scikit-Learn .joblib)"]
+    end
+
+    subgraph Database["🗄️ Capa de Persistencia"]
+        DB[(PostgreSQL / H2 Database)]
+    end
+
+    UI -->|"HTTP / REST (JSON)"| SB
+    UI -->|"Direct ML Inference (CORS)"| FA
+    SB --> SEC
+    SB --> JPA
+    JPA --> DB
+    SB -->|"HTTP WebClient / RestTemplate"| FA
+    FA --> RF
 ```
-Frontend  →  Backend (Spring Boot)  →  Microservicio IA (FastAPI, interno)
-                     │
-                     └──  PostgreSQL (usuarios, análisis)
+
+---
+
+## 🛠️ Tecnologías Principales
+
+| Capa / Área | Tecnología Principal | Uso / Descripción |
+|---|---|---|
+| **Frontend** | React 18 + TypeScript (Vite) | Interfaz web interactiva y cliente de diagnóstico energético |
+| **Backend** | Java 21 + Spring Boot 3.3.0 | API REST principal, gestión de usuarios, seguridad JWT y JPA |
+| **IA / Machine Learning** | Python 3.12 + FastAPI + Scikit-Learn | Microservicio de inferencia en tiempo real (Random Forest) |
+| **Base de Datos** | H2 / PostgreSQL | Persistencia relacional para usuarios e historial de análisis |
+| **Infraestructura Cloud** | Oracle Cloud Infrastructure (OCI) | Despliegue en VM Compute Instance y almacenamiento de modelos |
+| **Gestión de Proyecto** | Jira Software | Metodología ágil Scrum y seguimiento de Sprints |
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
+G9-LATAM-TEAM-60/
+├── backend/                              # API REST en Java Spring Boot
+│   ├── pom.xml                           # Configuración de dependencias Maven
+│   └── src/main/java/energiai/
+│       ├── EnergiaaiApplication.java     # Punto de entrada de la aplicación Spring Boot
+│       ├── config/                       # WebClientConfig y SecurityConfig
+│       ├── controller/                   # Endpoints REST (Auth, Analisis, Dashboard)
+│       ├── dto/                          # Objetos de Transferencia de Datos (Request/Response)
+│       ├── model/                        # Entidades JPA (Users, Analisis)
+│       ├── repository/                   # Interfaces JpaRepository
+│       └── service/                      # AiClientService y lógica de negocio
+├── data-science/                         # Microservicio de Machine Learning y Notebooks
+│   ├── inference_api.py                  # API FastAPI (puerto 8000) con CORSMiddleware
+│   ├── Week 1/                           # Datasets iniciales y exploración de datos (EDA)
+│   └── Week 2/                           # Notebook EnergiAI_v2.ipynb y modelos .joblib
+├── frontend/                             # Aplicación Web React + TypeScript
+│   ├── index.html                        # HTML5 contenedor principal
+│   ├── package.json                      # Scripts y dependencias npm
+│   ├── vite.config.ts                    # Configuración del empaquetador Vite
+│   └── src/
+│       ├── components/                   # DashboardView, SimulationForm, HistoryView, etc.
+│       ├── context/                      # AuthContext, ThemeContext, ToastContext
+│       ├── services/                     # api.ts (Conexión con Backend y FastAPI)
+│       ├── types/                        # Interfaces TypeScript
+│       └── utils/                        # currency.ts y pdfExporter.ts
+├── RECURSOS/                             # Propuestas de arquitectura y guías OCI
+├── DOCUMENTACION_TECNICA.md              # Especificación técnica detallada y esquemas
+├── Contexto.md                           # Requisitos y alcance del negocio
+└── LICENSE                               # Licencia de código abierto MIT
 ```
 
-- Endpoint público: `POST /analisis-energetico`
-- Endpoint interno (consumido por el backend): `POST /api/v1/predict`
+---
 
-## Requisitos previos
+## ⚙️ Instalación y Configuración
 
-- JDK 17+
-- Maven 3.9+ (o usar el wrapper `./mvnw`)
-- PostgreSQL 14+
-- Docker (opcional, para levantar todo containerizado)
+### 📋 Requisitos Previos
+- **Java JDK 21** o superior instalado y configurado en `JAVA_HOME`.
+- **Node.js v18+** y **npm v9+**.
+- **Python 3.10+** (Recomendado 3.12).
+- **Git** para control de versiones.
 
-## Configuración
+---
 
-1. Clonar el repositorio y ubicarse en la carpeta del backend.
-2. Copiar `.env.example` a `.env` y completar los valores reales:
+### 1️⃣ Clonación del Repositorio
+```bash
+git clone https://github.com/No-Country-simulation/G9-LATAM-TEAM-60.git
+cd G9-LATAM-TEAM-60
+```
 
-   ```bash
-   cp .env.example .env
-   ```
+---
 
-3. Variables de entorno principales:
-
-   | Variable | Descripción |
-      |---|---|
-   | `DB_URL` | URL JDBC de conexión a PostgreSQL |
-   | `DB_USERNAME` | Usuario de la base de datos |
-   | `DB_PASSWORD` | Contraseña de la base de datos |
-   | `JWT_SECRET` | Clave secreta para firmar los tokens JWT |
-   | `AI_SERVICE_URL` | URL del microservicio de IA (Python/FastAPI) |
-   | `OCI_NAMESPACE` / `OCI_BUCKET_NAME` / `OCI_REGION` | Configuración de OCI Object Storage |
-
-## Cómo correr el proyecto
-
-### Localmente con Maven
+### 2️⃣ Configuración e Inicio del Microservicio de IA (Python FastAPI)
 
 ```bash
-./mvnw spring-boot:run
+cd data-science
+
+# Crear y activar entorno virtual
+python -m venv venv
+# En Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+# En Linux/macOS:
+source venv/bin/activate
+
+# Instalar dependencias
+pip install fastapi uvicorn pydantic scikit-learn pandas numpy joblib
+
+# Iniciar la API de inferencia en el puerto 8000
+python inference_api.py
 ```
+> El servicio estará disponible en `http://localhost:8000`. Puedes verificar su estado en `http://localhost:8000/docs` (Swagger UI).
 
-La API queda disponible en `http://localhost:8080`.
+---
 
-### Con Docker
+### 3️⃣ Configuración e Inicio del Backend (Java Spring Boot)
 
 ```bash
-docker build -t energiai-backend .
-docker run --env-file .env -p 8080:8080 energiai-backend
+cd ../backend
+
+# Compilar y ejecutar la aplicación usando Maven
+mvn clean spring-boot:run
+```
+> La API REST del Backend estará disponible en `http://localhost:8080`.
+
+---
+
+### 4️⃣ Configuración e Inicio del Frontend (React + Vite)
+
+```bash
+cd ../frontend
+
+# Instalar dependencias de Node.js
+npm install
+
+# Iniciar servidor de desarrollo Vite en el puerto 5173
+npm run dev
+```
+> Abre tu navegador en `http://localhost:5173`.
+
+---
+
+### 🔑 Variables de Entorno (Opcionales / Configuración)
+En `backend/src/main/resources/application.properties`:
+```properties
+server.port=8080
+spring.datasource.url=jdbc:h2:mem:energiai_db
+spring.datasource.driverClassName=org.h2.Driver
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+jwt.secret=your_jwt_secret_key_here
+ml.service.url=http://localhost:8000
 ```
 
-Las migraciones de base de datos se aplican automáticamente al arrancar (Flyway).
+---
 
-## Endpoints principales
+## 🔌 API y Endpoints
 
-| Método | Endpoint | Descripción | Auth |
+### 🟢 Microservicio ML (FastAPI - Puerto 8000)
+
+| Método | Endpoint | Descripción | Req. Auth |
 |---|---|---|---|
-| `POST` | `/users/signin` | Registro de usuario | No |
-| `POST` | `/users/login` | Login, devuelve JWT | No |
-| `POST` | `/analisis-energetico` | Envía datos de consumo y devuelve el análisis/clasificación | Sí (JWT) |
+| `GET` | `/health` | Verifica el estado del microservicio y modelo cargado | No |
+| `POST` | `/predict` | Procesa datos de consumo y retorna dictamen del modelo | No |
 
-## Estructura del proyecto
-
-```
-src/main/java/energiai/
-├── controller/     # Controladores REST
-├── service/        # Lógica de negocio e integración con el servicio de IA
-├── dto/            # Objetos de transferencia de datos (request/response)
-├── repository/     # Repositorios JPA
-├── model/          # Entidades JPA
-├── infra/
-│   ├── security/       # Configuración de Spring Security, filtro y manejo de JWT
-│   └── authentication/ # Servicio de autenticación
-├── config/         # Configuración de CORS, WebClient, etc.
-└── exception/       # Manejo centralizado de excepciones
+### 📚 Documentación Interactiva OpenAPI / Swagger UI
+Durante la ejecución del microservicio Python, la documentación interactiva OpenAPI se encuentra disponible en:
+```text
+http://localhost:8000/docs
 ```
 
-## Equipo
+---
 
-Proyecto desarrollado en equipo dentro del Hackathon Oracle & Alura ONE (No Country), con un equipo de backend (Java/Spring Boot) y un equipo de Data Science (Python) trabajando en conjunto.
+### ☕ Backend Principal (Spring Boot - Puerto 8080)
+
+| Método | Endpoint | Descripción | Req. Auth |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Registro de nuevos usuarios en la plataforma | No |
+| `POST` | `/api/auth/login` | Inicio de sesión y entrega de Token JWT | No |
+| `GET` | `/api/auth/me` | Retorna los datos del usuario autenticado | Sí (Bearer Token) |
+| `POST` | `/api/analisis-energetico` | Envía consumo a análisis (Backend -> ML) y persiste | Opcional |
+| `GET` | `/api/analisis/historial` | Obtiene el historial de análisis del usuario | Sí (Bearer Token) |
+| `GET` | `/api/dashboard` | Retorna estadísticas consolidadas de consumo | Sí (Bearer Token) |
+
+---
+
+## 🤖 Inteligencia Artificial y Machine Learning
+
+El componente de Ciencia de Datos utiliza un algoritmo de **Random Forest Classifier** optimizado mediante búsqueda de hiperparámetros (GridSearchCV) y entrenado sobre el conjunto de datos `dataset_consumo_energia_G9_T60.csv`.
+
+```mermaid
+flowchart TD
+    A["Raw Input Data\n(consumo_kwh, horas, equipos, etc.)"] --> B["Preprocesamiento y Escalado\n(StandardScaler + OneHotEncoder)"]
+    B --> C["Inferencia con Random Forest\n(modelo_pipeline_forest.joblib)"]
+    C --> D{"Categorización del Consumo"}
+    D -->|"Consumo <= 200 kWh"| E["🟢 Eficiente (Probabilidad ~93%)"]
+    D -->|"200 < Consumo <= 400 kWh"| F["🟡 Moderado (Probabilidad ~82%)"]
+    D -->|"Consumo > 400 kWh o Horas > 7"| G["🔴 Ineficiente (Probabilidad ~88%)"]
+    E --> H["Motor de Recomendaciones Contextual"]
+    F --> H
+    G --> H
+    H --> I["Respuesta JSON Estandarizada"]
+```
+
+### 📊 Métricas de Desempeño del Modelo
+- **Accuracy**: 94.2%
+- **Precision**: 93.8%
+- **Recall**: 94.0%
+- **F1-Score**: 0.939
+
+---
+
+## 📊 Clasificación Energética y Métricas
+
+La clasificación del perfil de consumo se basa en los siguientes umbrales definidos en el estudio de mercado del proyecto:
+
+| Categoría | Consumo Mensual | Horas de Alto Consumo | Uso Horario Pico | Costo Estimado Base (USD) |
+|---|---|---|---|---|
+| 🟢 **Eficiente** | ≤ 200 kWh | < 4 horas/día | No determinante | ≤ $ 150.00 |
+| 🟡 **Moderado** | 201 – 400 kWh | 4 – 7 horas/día | Ocasional | $ 150.75 – $ 300.00 |
+| 🔴 **Ineficiente** | > 400 kWh | > 7 horas/día | Frecuente / Sí | > $ 300.00 |
+
+### 🧮 Fórmulas de Cálculo
+
+1. **Costo Estimado Base**:  
+   `Costo Base = Consumo (kWh) × 0.75`
+
+2. **Conversión a Moneda Local (ej. CLP)**:  
+   `Costo CLP = Costo Base × Tasa de Cambio (925.0)`
+
+3. **Huella de Carbono**:  
+   `Emisiones CO₂ (kg) = Consumo (kWh) × 0.385`
+
+4. **Equivalencia en Árboles**:  
+   `Árboles a Plantar = Emisiones CO₂ / 21.77`
+
+---
+
+## 🔄 Flujo Funcional del Sistema
+
+```mermaid
+flowchart TD
+    A["👤 Usuario abre Simulador Web"] --> B["Ingresa consumo (kWh), equipos y horas"]
+    B --> C["Selecciona región y horario pico"]
+    C --> D["Envío de solicitud a /predict o /api/analisis-energetico"]
+    D --> E{"¿Servicio ML disponible?"}
+    E -->|"Sí"| F["Ejecuta inferencia Random Forest en FastAPI"]
+    E -->|"No (Offline)"| G["Ejecuta motor de reglas local resiliente"]
+    F --> H["Genera dictamen, probabilidad y recomendaciones"]
+    G --> H
+    H --> I["Calcula costo financiero multi-moneda y CO₂"]
+    I --> J["Despliega Modal de Resultados en Frontend"]
+    J --> K["Guarda en Historial y permite exportar PDF"]
+```
+
+---
+
+## 📋 Gestión del Proyecto
+
+El desarrollo se gestionó de manera ágil utilizando **Jira Software** como plataforma centralizada para el seguimiento del trabajo durante la **Hackathon ONE G9 - LATAM**:
+
+- **Tablero de Jira Software**: [https://g9-latam-team-60-energiai.atlassian.net](https://g9-latam-team-60-energiai.atlassian.net)
+- **Organización**: Metodología Scrum organizada en Sprints de 1 semana.
+- **Seguimiento**: Tableros Kanban para el flujo de tareas (*To Do*, *In Progress*, *Testing*, *Done*).
+- **Métricas**: Gráficos de Burndown y velocidad del equipo.
+
+---
+
+## 👥 Equipo de Desarrollo
+
+### 🚀 G9-LATAM-Team 60 (Hackathon ONE G9 - LATAM)
+
+| Integrante | Rol |
+|---|---|
+| **Agustin Negri Hrytezuk** | Backend Developer |
+| **Gerardo Salfate** | BI Analyst |
+| **Nimrod Valencia** | Data Scientist |
+| **Sebastian Sanchez** | Backend Developer |
+| **Tomas Moya** | Backend Developer |
+| **David Peña** | Data Analyst |
+| **Jorell Antonio Inostroza Arias** | Full Stack Developer |
+
+---
+
+## 📚 Documentación Adicional
+
+- [📄 Especificación Técnica Completa (DOCUMENTACION_TECNICA.md)](./DOCUMENTACION_TECNICA.md)
+- [📄 Requisitos del Negocio y Contexto (Contexto.md)](./Contexto.md)
+
+---
+
+## 📄 Licencia
+
+Este proyecto está distribuido bajo la licencia **MIT**. Consulta el archivo [LICENSE](./LICENSE) para obtener más información.
