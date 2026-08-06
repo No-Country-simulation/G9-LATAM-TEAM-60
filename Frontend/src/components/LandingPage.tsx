@@ -81,16 +81,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
         </nav>
 
         {/* Acciones & Responsive Burger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
           {/* Selector de País e Idioma Flotante */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setLangDropdownOpen(!langDropdownOpen)}
               className="btn btn-secondary"
               style={{
-                padding: '6px 12px',
+                padding: '5px 12px',
                 borderRadius: '20px',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
@@ -98,27 +98,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
                 whiteSpace: 'nowrap',
                 color: 'var(--color-emerald-600)',
                 background: 'var(--badge-success-bg)',
-                border: '1px solid var(--border-color)'
+                border: '1px solid var(--border-color)',
+                cursor: 'pointer'
               }}
               title="Cambiar País / Idioma"
             >
-              <Globe size={15} color="var(--color-emerald-500)" />
-              <span>{paisConfig.bandera} {paisConfig.nombre} · {paisConfig.moneda}</span>
-              <ChevronDown size={14} />
+              <Globe size={14} color="var(--color-emerald-500)" />
+              <span className="country-fullname-desktop">{paisConfig.bandera} {paisConfig.nombre} · {paisConfig.moneda}</span>
+              <span className="country-code-mobile" style={{ display: 'none' }}>{paisConfig.bandera} {paisConfig.moneda}</span>
+              <ChevronDown size={13} style={{ opacity: 0.7 }} />
             </button>
 
             {langDropdownOpen && (
               <div className="saas-card" style={{
                 position: 'absolute',
-                top: '115%',
+                top: '120%',
                 right: 0,
-                width: '220px',
+                width: '230px',
                 zIndex: 100,
                 padding: '8px',
                 boxShadow: 'var(--shadow-lg)',
-                background: 'var(--bg-surface)',
+                background: 'var(--bg-elevated)',
                 border: '1px solid var(--border-color)',
-                borderRadius: '12px'
+                borderRadius: '14px'
               }}>
                 <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '6px 10px', marginBottom: '4px' }}>
                   {t('country.select')}
@@ -147,7 +149,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span>{c.bandera}</span>
+                      <span style={{ fontSize: '1.1rem' }}>{c.bandera}</span>
                       <span>{c.nombre}</span>
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -160,27 +162,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
             )}
           </div>
 
+          {/* Toggle Modo Claro / Oscuro */}
           <button
             onClick={toggleTheme}
             className="btn btn-secondary"
-            style={{ padding: '8px 12px', borderRadius: '10px' }}
+            style={{ padding: '7px 9px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             title={`Cambiar a modo ${theme === 'light' ? 'oscuro' : 'claro'}`}
           >
-            {theme === 'light' ? <Moon size={18} color="var(--text-secondary)" /> : <Sun size={18} color="#f59e0b" />}
+            {theme === 'light' ? <Moon size={17} color="var(--text-secondary)" /> : <Sun size={17} color="#f59e0b" />}
           </button>
 
-          <button onClick={onOpenAuth} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
-            {t('auth.login')}
+          {/* Botón Ingresar */}
+          <button onClick={onOpenAuth} className="btn btn-primary" style={{ padding: '6px 14px', fontSize: '0.8rem', whiteSpace: 'nowrap', borderRadius: '20px' }}>
+            <span className="auth-btn-text-desktop">{t('auth.login')}</span>
+            <span className="country-code-mobile" style={{ display: 'none' }}>{t('auth.login')}</span>
           </button>
 
-          {/* Botón Menú Mobile */}
+          {/* Botón Menú Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="btn btn-secondary"
-            style={{ padding: '8px', display: 'none' }}
+            className="btn btn-secondary landing-hamburger-btn"
+            style={{ padding: '7px 9px', borderRadius: '10px' }}
             title="Menú móvil"
           >
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {mobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
           </button>
         </div>
       </header>

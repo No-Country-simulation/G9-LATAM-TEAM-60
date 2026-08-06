@@ -483,16 +483,28 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+@media (max-width: 768px) {
+  .nav-links-desktop {
+    display: none !important;
+  }
+  .landing-hamburger-btn {
+    display: flex !important;
+  }
+}
+
 @media (min-width: 769px) {
   .mobile-only-close {
     display: none !important;
   }
 
-  .mobile-hamburger-btn {
+  .mobile-hamburger-btn, .landing-hamburger-btn {
     display: none !important;
   }
 
   .desktop-only-toggle {
+    display: flex !important;
+  }
+  .nav-links-desktop {
     display: flex !important;
   }
 }
