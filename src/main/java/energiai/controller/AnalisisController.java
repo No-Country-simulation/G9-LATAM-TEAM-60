@@ -57,8 +57,8 @@ public class AnalisisController {
                 : aiClientService.obtenerHistorialGlobal();
 
         long total = historial.size();
-        double consumoPromedio = total > 0 ? historial.stream().mapToDouble(AnalisisEnergeticoResponse::getConsumo_kwh).average().orElse(0.0) : 0.0;
-        double costoTotal = historial.stream().mapToDouble(AnalisisEnergeticoResponse::getCosto_estimado_mensual).sum();
+        double consumoPromedio = total > 0 ? historial.stream().mapToDouble(a -> a != null && a.getConsumo_kwh() != null ? a.getConsumo_kwh() : 0.0).average().orElse(0.0) : 0.0;
+        double costoTotal = historial.stream().mapToDouble(a -> a != null ? a.getCosto_estimado_mensual() : 0.0).sum();
 
         Map<String, Long> distribucion = historial.stream()
                 .collect(Collectors.groupingBy(a -> a.getCategoria() != null ? a.getCategoria() : "Moderado", Collectors.counting()));
