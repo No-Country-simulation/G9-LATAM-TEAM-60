@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { X, Sparkles, Zap, CheckCircle2, AlertTriangle, RefreshCw, FileText } from 'lucide-react';
 import type { AnalisisResponse } from '../types';
 import { useToast } from '../context/ToastContext';
@@ -13,7 +13,7 @@ interface ResultsModalProps {
 
 export const ResultsModal: React.FC<ResultsModalProps> = ({ result, onClose, onReset }) => {
   const { showToast } = useToast();
-  const { t, formatMoney, formatearCO2 } = useCountry();
+  const { t, formatMoney, convertirDesdeBase, formatearCO2 } = useCountry();
 
   if (!result) return null;
 
@@ -82,7 +82,7 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ result, onClose, onR
               {t('res.monthlyCost')}
             </div>
             <div className="font-mono" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-emerald-500)' }}>
-              {formatMoney(result.costo_estimado_mensual)}
+              {formatMoney(convertirDesdeBase(result.costo_estimado_mensual))}
             </div>
           </div>
           <div style={{ background: 'var(--bg-primary)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)', textAlign: 'center' }}>

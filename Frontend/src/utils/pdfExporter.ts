@@ -22,10 +22,12 @@ export const generarComprobantePDF = (analisis: AnalisisResponse) => {
   const tr = TRANSLATIONS[lang] || TRANSLATIONS.es;
   const t = (key: string) => tr[key] || TRANSLATIONS.es[key] || key;
 
-  // Moneda y costo (sin decimales)
+  // Moneda y costo (sin decimales, con salvaguarda anti-doble conversión)
   const monedaCode = paisConfig.moneda;
   const curr = CURRENCIES[monedaCode] || CURRENCIES.CLP;
-  const costoBase = analisis.costo_estimado_mensual;
+  const rawCost = analisis.costo_estimado_mensual || 0;
+  // Si rawCost es mayor a 5000 (significa que fue convertido previamente), se desconvierte para calcular limpiamente
+  const costoBase = rawCost > 5000 ? (rawCost / curr.exchangeRateFromBase) : rawCost;
   const costoConvertido = Math.round(convertFromBaseCost(costoBase, monedaCode));
   const costoStr = `${curr.symbol} ${costoConvertido.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 

@@ -1,10 +1,9 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Zap, Home, Building2 } from 'lucide-react';
 import type { AnalisisRequest, AnalisisResponse } from '../types';
 import { apiService } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { useCountry } from '../context/CountryContext';
-import { convertFromBaseCost } from '../utils/currency';
 
 interface SimulationFormProps {
   onSimulationComplete: (res: AnalisisResponse) => void;
@@ -43,8 +42,6 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
       const response = await apiService.analizarConsumo(req);
       response.moneda = paisConfig.moneda;
       response.simboloMoneda = paisConfig.simboloMoneda;
-      const costoBaseML = response.costo_estimado_mensual || (consumo * 0.75);
-      response.costo_estimado_mensual = convertFromBaseCost(costoBaseML, paisConfig.moneda);
       showToast(`${t('sim.success')} — ${paisConfig.bandera} ${paisConfig.moneda}`, 'success');
       onSimulationComplete(response);
     } catch (err) {
