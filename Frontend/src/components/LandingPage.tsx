@@ -24,20 +24,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
 
   const faqs = [
     {
-      q: '¿Cómo predice EnergiAI mi perfil de consumo energético?',
-      a: 'Utilizamos algoritmos supervisados de Regresión Logística y Random Forest entrenados con patrones de consumo residencial y comercial en LATAM. El sistema evalúa kWh, horas pico y equipamiento para categorizar la eficiencia con más del 93% de precisión.'
+      q: t('landing.faq.q1'),
+      a: t('landing.faq.a1')
     },
     {
-      q: '¿Cuál es la tarifa utilizada para el cálculo financiero?',
-      a: 'Por defecto aplicamos la tarifa regulada de R$ 0.75 por kWh (equivalente a tarifas estándar LATAM), calculando el costo mensual proyectado y el ahorro directo al implementar las recomendaciones de la IA.'
+      q: t('landing.faq.q2'),
+      a: t('landing.faq.a2')
     },
     {
-      q: '¿Requiere la instalación de sensores físicos o medidores inteligentes?',
-      a: 'No. EnergiAI funciona como una plataforma SaaS analítica. Puedes ingresar tus datos manualmente en el simulador o conectar lecturas mediante nuestra API REST corporativa.'
+      q: t('landing.faq.q3'),
+      a: t('landing.faq.a3')
     },
     {
-      q: '¿Cómo se garantiza la seguridad e integración empresarial?',
-      a: 'La arquitectura backend está desarrollada en Java Spring Boot 3 con tokens JWT y migración de esquemas Flyway en base de datos PostgreSQL, desplegable en la infraestructura de Oracle Cloud Infrastructure (OCI).'
+      q: t('landing.faq.q4'),
+      a: t('landing.faq.a4')
     }
   ];
 
@@ -73,11 +73,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
 
         {/* Links de Navegación Desktop */}
         <nav className="nav-links-desktop" style={{ display: 'flex', gap: '24px', fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
-          <a href="#problema" style={{ color: 'inherit' }}>¿Qué es?</a>
-          <a href="#como-funciona" style={{ color: 'inherit' }}>¿Cómo funciona?</a>
-          <a href="#beneficios" style={{ color: 'inherit' }}>Beneficios</a>
-          <a href="#tecnologias" style={{ color: 'inherit' }}>Tecnología</a>
-          <a href="#faq" style={{ color: 'inherit' }}>FAQ</a>
+          <a href="#problema" style={{ color: 'inherit' }}>{t('landing.nav.whatIs')}</a>
+          <a href="#como-funciona" style={{ color: 'inherit' }}>{t('landing.nav.howItWorks')}</a>
+          <a href="#beneficios" style={{ color: 'inherit' }}>{t('landing.nav.benefits')}</a>
+          <a href="#tecnologias" style={{ color: 'inherit' }}>{t('landing.nav.tech')}</a>
+          <a href="#faq" style={{ color: 'inherit' }}>{t('landing.nav.faq')}</a>
         </nav>
 
         {/* Acciones & Responsive Burger */}
@@ -188,11 +188,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
       {/* Menú Móvil Desplegable */}
       {mobileMenuOpen && (
         <div className="saas-card" style={{ position: 'fixed', top: '64px', left: '16px', right: '16px', zIndex: 45, padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', boxShadow: 'var(--shadow-lg)' }}>
-          <a href="#problema" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>¿Qué es EnergiAI?</a>
-          <a href="#como-funciona" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>¿Cómo funciona?</a>
-          <a href="#beneficios" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Beneficios</a>
-          <a href="#tecnologias" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Tecnología</a>
-          <a href="#faq" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>FAQ</a>
+          <a href="#problema" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.whatIs')}</a>
+          <a href="#como-funciona" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.howItWorks')}</a>
+          <a href="#beneficios" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.benefits')}</a>
+          <a href="#tecnologias" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.tech')}</a>
+          <a href="#faq" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t('landing.nav.faq')}</a>
           
           <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px' }}>
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
@@ -233,21 +233,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
       {/* 2. Hero Section Adaptado & Sin Recortes */}
       <section style={{ padding: '60px 20px 40px', maxWidth: '1240px', margin: '0 auto', textAlign: 'center' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '99px', background: 'var(--badge-success-bg)', border: '1px solid var(--badge-success-border)', color: 'var(--badge-success-text)', fontSize: '0.8rem', fontWeight: 700, marginBottom: '20px', maxWidth: '100%' }}>
-          <Sparkles size={14} /> Optimización Energética IA • Hackathon OCI LATAM
+          <Sparkles size={14} /> {t('landing.hero.badge')}
         </div>
 
         <h1 className="hero-title" style={{ fontSize: '3.4rem', lineHeight: 1.15, fontWeight: 800, maxWidth: '940px', margin: '0 auto 20px' }}>
-          Inteligencia Artificial para un Consumo Energético <br />
-          <span className="gradient-heading">Eficiente, Sostenible y Rentable</span>
+          {t('landing.hero.title1')} <br />
+          <span className="gradient-heading">{t('landing.hero.title2')}</span>
         </h1>
 
         <p className="hero-subtitle" style={{ fontSize: '1.15rem', color: 'var(--text-secondary)', maxWidth: '740px', margin: '0 auto 32px', lineHeight: 1.6 }}>
-          Optimiza la gestión eléctrica residencial e industrial mediante modelos analíticos de <strong>Scikit-Learn</strong> e indicadores financieros adaptados a <strong>{paisConfig.nombre} ({paisConfig.moneda})</strong>.
+          {t('landing.hero.subtitle')} <strong>{paisConfig.nombre} ({paisConfig.moneda})</strong>.
         </p>
 
         <div className="btn-group-responsive" style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginBottom: '40px' }}>
           <button onClick={onStartSimulation} className="btn btn-primary" style={{ padding: '14px 36px', fontSize: '1.05rem', borderRadius: '12px' }}>
-            <Zap size={20} /> Comenzar Simulación <ArrowRight size={20} />
+            <Zap size={20} /> {t('landing.hero.startBtn')} <ArrowRight size={20} />
           </button>
         </div>
 
@@ -276,10 +276,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
             zIndex: 10
           }}>
             <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-emerald-500)', textTransform: 'uppercase', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Sliders size={13} /> Tarifa Interactiva en Tiempo Real
+              <Sliders size={13} /> {t('landing.hero.cardTitle')}
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Consumo:</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t('landing.hero.consumption')}</span>
               <span className="font-mono" style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{previewKwh} kWh</span>
             </div>
             <input 
@@ -288,8 +288,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
               style={{ width: '100%', accentColor: 'var(--color-emerald-500)', marginBottom: '6px', cursor: 'pointer' }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Costo est:</span>
-              <span className="font-mono" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-emerald-500)' }}>R$ {previewCost.toFixed(2)}</span>
+              <span style={{ color: 'var(--text-muted)' }}>{t('landing.hero.estCost')}</span>
+              <span className="font-mono" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-emerald-500)' }}>{paisConfig.simboloMoneda} {previewCost.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -300,10 +300,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
         <div style={{ maxWidth: '1140px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '44px' }}>
             <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '14px' }}>
-              ¿Qué problema resuelve EnergiAI?
+              {t('landing.prob.title')}
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto' }}>
-              En América Latina, más del 30% de la energía eléctrica se desperdicia por falta de visibilidad en horarios pico y hábitos ineficientes.
+              {t('landing.prob.subtitle')}
             </p>
           </div>
 
@@ -313,9 +313,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
                 <div style={{ color: 'var(--color-rose-500)', background: 'var(--badge-error-bg)', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
                   <DollarSign size={20} />
                 </div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '8px' }}>Sobrecosto Descontrolado</h3>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '8px' }}>{t('landing.prob.card1Title')}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                  Sin una herramienta analítica, los usuarios ignoran el impacto financiero del consumo en horario punta (18:00 - 22:00), sufriendo facturas elevadas y penalizaciones.
+                  {t('landing.prob.card1Body')}
                 </p>
               </div>
 
@@ -323,9 +323,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
                 <div style={{ color: 'var(--color-emerald-500)', background: 'var(--badge-success-bg)', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
                   <Cpu size={20} />
                 </div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '8px' }}>Diagnóstico Basado en Datos</h3>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '8px' }}>{t('landing.prob.card2Title')}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                  EnergiAI aplica modelos de Machine Learning para clasificar el consumo en <strong>Eficiente</strong>, <strong>Moderado</strong> o <strong>Ineficiente</strong>, generando recomendaciones automáticas para reducir la tarifa.
+                  {t('landing.prob.card2Body')}
                 </p>
               </div>
             </div>
@@ -346,35 +346,35 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
       <section id="como-funciona" style={{ padding: '70px 20px', maxWidth: '1140px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '48px' }}>
           <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '14px' }}>
-            ¿Cómo funciona EnergiAI en 3 simples pasos?
+            {t('landing.steps.title')}
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem' }}>
-            Sin configuraciones complejas ni hardware adicional.
+            {t('landing.steps.subtitle')}
           </p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
           <div className="saas-card" style={{ position: 'relative' }}>
             <div className="font-mono" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-emerald-500)', opacity: 0.3, marginBottom: '6px' }}>01</div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px' }}>Ingresa tus Parámetros</h3>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px' }}>{t('landing.step1Title')}</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-              Selecciona tu tipo de inmueble (Residencial, Oficina, Comercio), consumo mensual aproximado en kWh y uso en horas pico.
+              {t('landing.step1Body')}
             </p>
           </div>
 
           <div className="saas-card" style={{ position: 'relative' }}>
             <div className="font-mono" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-cyan-500)', opacity: 0.3, marginBottom: '6px' }}>02</div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px' }}>Inferencia del Modelo ML</h3>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px' }}>{t('landing.step2Title')}</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-              Nuestro algoritmo procesa las variables de consumo y determina la probabilidad de eficiencia energética con métricas de alta precisión.
+              {t('landing.step2Body')}
             </p>
           </div>
 
           <div className="saas-card" style={{ position: 'relative' }}>
             <div className="font-mono" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-amber-500)', opacity: 0.3, marginBottom: '6px' }}>03</div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px' }}>Dictamen y Plan de Ahorro</h3>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px' }}>{t('landing.step3Title')}</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-              Recibe el desglose financiero en {paisConfig.moneda}, nivel de confianza y recomendaciones personalizadas para optimizar tus hábitos eléctricos.
+              {t('landing.step3Body').replace('{currency}', paisConfig.moneda)}
             </p>
           </div>
         </div>
@@ -385,7 +385,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
         <div style={{ maxWidth: '1140px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '14px' }}>
-              Impacto Económico y Sostenible
+              {t('landing.impact.title')}
             </h2>
           </div>
 
@@ -394,11 +394,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
               <div style={{ color: 'var(--color-emerald-500)', marginBottom: '14px' }}>
                 <DollarSign size={32} />
               </div>
-              <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '10px' }}>Ahorro Económico Directo</h3>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '10px' }}>{t('landing.impact.ecoTitle')}</h3>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> Reducción proyectada de hasta 24% en la factura eléctrica.</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> Prevención de penalizaciones por sobreconsumo en horario punta.</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> Monitoreo constante en {paisConfig.moneda}.</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> {t('landing.impact.eco1')}</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> {t('landing.impact.eco2')}</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> {t('landing.impact.eco3').replace('{currency}', paisConfig.moneda)}</li>
               </ul>
             </div>
 
@@ -406,11 +406,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
               <div style={{ color: 'var(--color-cyan-500)', marginBottom: '14px' }}>
                 <Leaf size={32} />
               </div>
-              <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '10px' }}>Sostenibilidad Ambiental</h3>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '10px' }}>{t('landing.impact.envTitle')}</h3>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> Disminución de la huella de carbono individual y corporativa.</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> Fomento de hábitos de consumo responsable alineados a ESG.</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> Alivio de la carga operativa sobre la red eléctrica en {paisConfig.nombre}.</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> {t('landing.impact.env1')}</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> {t('landing.impact.env2')}</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> {t('landing.impact.env3').replace('{country}', paisConfig.nombre)}</li>
               </ul>
             </div>
           </div>
@@ -421,10 +421,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
       <section id="tecnologias" style={{ padding: '70px 20px', maxWidth: '1140px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '14px' }}>
-            Arquitectura de Nivel Empresarial
+            {t('landing.tech.title')}
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem' }}>
-            Construido con las tecnologías líderes de la industria.
+            {t('landing.tech.subtitle')}
           </p>
         </div>
 
@@ -470,7 +470,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '14px' }}>
-              Preguntas Frecuentes (FAQ)
+              {t('landing.faq.title')}
             </h2>
           </div>
 
