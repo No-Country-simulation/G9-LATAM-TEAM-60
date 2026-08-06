@@ -28,8 +28,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setLoading(true);
     try {
       if (isRegister) {
-        await register(username, pass, nombre);
-        showToast(`Bienvenido a EnergiAI, ${nombre || username}!`, 'success');
+        const nombreFinal = nombre.trim() || username.split('@')[0] || username;
+        await register(username, pass, nombreFinal);
+        showToast(`¡Bienvenido a EnergiAI, ${nombreFinal}!`, 'success');
       } else {
         await login(username, pass);
         showToast('Sesión iniciada correctamente', 'success');

@@ -192,8 +192,15 @@ export const apiService = {
         body: JSON.stringify(data)
       });
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText || 'Error al registrar usuario');
+        let msg = 'Error al registrar usuario';
+        try {
+          const errObj = await response.json();
+          msg = errObj.message || errObj.error || msg;
+        } catch (_) {
+          const txt = await response.text();
+          if (txt) msg = txt;
+        }
+        throw new Error(msg);
       }
       const resData = await response.json();
       if (resData.jwtToken) {
