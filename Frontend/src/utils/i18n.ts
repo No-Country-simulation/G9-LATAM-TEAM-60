@@ -1,4 +1,4 @@
-﻿export type Language = 'es' | 'pt' | 'en';
+export type Language = 'es' | 'pt' | 'en';
 
 export const TRANSLATIONS: Record<Language, Record<string, string>> = {
   es: {
@@ -107,6 +107,7 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'history.subtitle': 'Registro cronológico oficial de inferencias energéticas realizadas por EnergiAI.',
     'history.refresh': 'Refrescar',
     'history.exportCsv': 'Exportar CSV',
+    'history.downloadCartola': 'Descargar Cartola',
     'history.exportExcel': 'Exportar Excel (.xls)',
     'history.searchPlaceholder': 'Filtrar por identificador o categoría...',
     'history.colId': 'Identificador',
@@ -120,6 +121,7 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'history.today': 'Hoy',
     'history.noRecords': 'No hay registros exportables.',
     'history.csvExported': 'Archivo CSV exportado correctamente',
+    'history.cartolaGenerated': 'Cartola de consumo energético PDF generada correctamente',
     'history.excelExported': 'Reporte Excel generado correctamente',
     'history.loadError': 'Error cargando historial de auditoría',
     'history.yes': 'SÍ',

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { History, Download, Search, RefreshCw, ExternalLink, FileText, FileSpreadsheet } from 'lucide-react';
+import { History, Search, RefreshCw, ExternalLink, FileText, FileSpreadsheet } from 'lucide-react';
 import type { AnalisisResponse } from '../types';
 import { apiService } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { useCountry } from '../context/CountryContext';
-import { generarComprobantePDF } from '../utils/pdfExporter';
+import { generarComprobantePDF, generarCartolaPDF } from '../utils/pdfExporter';
 
 interface HistoryViewProps {
   onSelectAnalisis: (res: AnalisisResponse) => void;
@@ -36,54 +36,11 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
     item.categoria.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  /** Exporta CSV con separador ; y locale del país activo */
-  const exportCSV = () => {
+  /** Genera la Cartola Energética en formato PDF oficial estilo banco */
+  const downloadCartola = () => {
     if (list.length === 0) { showToast(t('history.noRecords'), 'info'); return; }
-    const sepDirective = 'sep=;\r\n';
-    const yesLabel = t('history.yes');
-    const noLabel  = t('history.no');
-    const naLabel  = t('history.na');
-
-    const headers = [
-      `"${t('excel.colId')}"`,
-      `"${t('history.colDate')}"`,
-      `"${t('history.colCategory')}"`,
-      `"${t('history.colConfidence')}"`,
-      `"${t('history.colCost')} (${paisConfig.moneda})"`,
-      `"${t('sim.consumption')}"`,
-      `"${t('sim.propertyType')}"`,
-      `"${t('sim.appliances')}"`,
-      `"${t('sim.peakHours')}"`,
-      `"${t('sim.region')}"`,
-      `"${t('excel.colRecommendations')}"`,
-      `"${t('history.colDate')}"`,
-    ].join(';');
-
-    const rows = list.map(i => {
-      const costo = convertirDesdeBase(i.costo_estimado_mensual);
-      return [
-        i.id || '',
-        `"${i.identificador || ''}"`,
-        `"${i.categoria || ''}"`,
-        `"${(i.probabilidad * 100).toFixed(1)}%"`,
-        `"${paisConfig.simboloMoneda} ${Math.round(costo).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}"`,
-        i.request ? `"${i.request.consumo_kwh} kWh"` : i.consumo_kwh ? `"${i.consumo_kwh} kWh"` : `"${naLabel}"`,
-        i.request ? `"${i.request.tipo_inmueble}"` : i.tipo_inmueble ? `"${i.tipo_inmueble}"` : `"${naLabel}"`,
-        i.request ? `"${i.request.cantidad_equipos}"` : i.cantidad_equipos ? `"${i.cantidad_equipos}"` : `"${naLabel}"`,
-        i.request ? `"${i.request.uso_horario_pico ? yesLabel : noLabel}"` : i.uso_horario_pico !== undefined ? `"${i.uso_horario_pico ? yesLabel : noLabel}"` : `"${naLabel}"`,
-        i.request ? `"${i.request.region}"` : i.region ? `"${i.region}"` : '"Centro"',
-        i.recomendaciones ? `"${i.recomendaciones.join('; ').replace(/"/g, '""')}"` : '""',
-        `"${formatDate(i.fecha, { dateStyle: 'short', timeStyle: 'short' })}"`,
-      ].join(';');
-    }).join('\r\n');
-
-    const blob = new Blob(['\uFEFF' + sepDirective + headers + '\r\n' + rows], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `auditoria_energiai_${paisConfig.codigo}_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link); link.click(); document.body.removeChild(link);
-    showToast(t('history.csvExported'), 'success');
+    generarCartolaPDF(list);
+    showToast(t('history.cartolaGenerated'), 'success');
   };
 
   /** Exporta Excel (.xls) con textos y moneda del país activo */
@@ -168,8 +125,8 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onSelectAnalisis }) =>
           <button onClick={loadHistory} className="btn btn-secondary" style={{ padding: '8px 14px', fontSize: '0.85rem' }}>
             <RefreshCw size={15} /> {t('history.refresh')}
           </button>
-          <button onClick={exportCSV} className="btn btn-secondary" style={{ padding: '8px 14px', fontSize: '0.85rem' }}>
-            <Download size={15} /> {t('history.exportCsv')}
+          <button onClick={downloadCartola} className="btn btn-secondary" style={{ padding: '8px 14px', fontSize: '0.85rem', color: 'var(--color-emerald-500)' }}>
+            <FileText size={15} /> {t('history.downloadCartola')}
           </button>
           <button onClick={exportExcel} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
             <FileSpreadsheet size={15} /> {t('history.exportExcel')}
