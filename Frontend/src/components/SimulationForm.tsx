@@ -63,16 +63,16 @@ export const SimulationForm: React.FC<SimulationFormProps> = ({ onSimulationComp
   return (
     <div className="saas-card animate-fade-in" style={{ maxWidth: '960px', margin: '0 auto 60px', padding: '36px' }}>
       {/* Cabecera */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
-        <div style={{ background: 'var(--badge-success-bg)', padding: '12px', borderRadius: '12px', color: 'var(--color-emerald-500)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px', flexWrap: 'wrap' }}>
+        <div style={{ background: 'var(--badge-success-bg)', padding: '12px', borderRadius: '12px', color: 'var(--color-emerald-500)', flexShrink: 0 }}>
           <Zap size={26} />
         </div>
-        <div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800 }}>{t('sim.title')}</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{t('sim.subtitle')}</p>
+        <div style={{ flex: 1, minWidth: '200px' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t('sim.title')}</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>{t('sim.subtitle')}</p>
         </div>
         {/* Badge de País Activo */}
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', background: 'var(--badge-success-bg)', border: '1px solid var(--border-color)', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-emerald-600)', flexShrink: 0, whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', background: 'var(--badge-success-bg)', border: '1px solid var(--border-color)', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-emerald-600)', flexShrink: 0, whiteSpace: 'nowrap' }}>
           <span>{paisConfig.bandera}</span>
           <span>{paisConfig.nombre} · {paisConfig.moneda}</span>
         </div>

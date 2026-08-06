@@ -467,6 +467,18 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .nav-bell-btn {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .country-fullname-desktop {
+    display: none !important;
+  }
+  .country-code-mobile {
+    display: inline !important;
+  }
+  .auth-btn-text-desktop {
     display: none !important;
   }
 }
