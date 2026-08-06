@@ -224,21 +224,27 @@ export const apiService = {
   async checkAuth(): Promise<UserProfile | null> {
     const token = localStorage.getItem('energiai_jwt');
     if (!token) return null;
+
+    if (token.startsWith('demo_offline')) {
+      return {
+        username: 'demo@energiai.com',
+        nombreCompleto: 'Usuario Demo',
+        role: 'USER',
+        jwtToken: token
+      };
+    }
+
     try {
       const response = await fetch(`${BASE_URL}/auth/me`, {
         headers: getHeaders()
       });
-      if (!response.ok) throw new Error('Sesión expirada');
+      if (!response.ok) {
+        localStorage.removeItem('energiai_jwt');
+        return null;
+      }
       return await response.json();
     } catch (err) {
-      if (token.startsWith('demo_offline')) {
-        return {
-          username: 'demo@energiai.com',
-          nombreCompleto: 'Usuario Demo',
-          role: 'USER',
-          jwtToken: token
-        };
-      }
+      localStorage.removeItem('energiai_jwt');
       return null;
     }
   },
