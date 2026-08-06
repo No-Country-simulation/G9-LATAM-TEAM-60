@@ -2,6 +2,7 @@ import React from 'react';
 import { LayoutDashboard, Zap, History, Lightbulb, Settings, ChevronLeft, ChevronRight, LogOut, Shield, User, Lock, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useCountry } from '../context/CountryContext';
 
 interface SidebarProps {
   activeTab: string;
@@ -24,13 +25,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const { showToast } = useToast();
+  const { paisConfig, t } = useCountry();
 
   const menuItems = [
-    { id: 'simulador', label: 'Simulador IA', icon: Zap, public: true },
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, public: false },
-    { id: 'historial', label: 'Historial & CSV', icon: History, public: false },
-    { id: 'recomendaciones', label: 'Recomendaciones', icon: Lightbulb, public: false },
-    { id: 'configuracion', label: 'Configuración', icon: Settings, public: false },
+    { id: 'simulador', label: t('nav.simulator'), icon: Zap, public: true },
+    { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, public: false },
+    { id: 'historial', label: t('nav.history'), icon: History, public: false },
+    { id: 'recomendaciones', label: t('nav.recommendations'), icon: Lightbulb, public: false },
+    { id: 'configuracion', label: `${t('nav.settings')} ${paisConfig.bandera}`, icon: Settings, public: false },
   ];
 
   const handleTabClick = (item: typeof menuItems[0]) => {

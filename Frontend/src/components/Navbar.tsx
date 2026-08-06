@@ -3,6 +3,7 @@ import { Bell, Sun, Moon, LogIn, ChevronRight, User, Menu } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useCountry } from '../context/CountryContext';
 
 interface NavbarProps {
   activeTab: string;
@@ -15,15 +16,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onOpenAuth, onGoLandi
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { paisConfig, t } = useCountry();
 
   const getBreadcrumbLabel = (tab: string) => {
     switch (tab) {
-      case 'dashboard': return 'Dashboard Ejecutivo';
-      case 'simulador': return 'Simulador IA';
-      case 'historial': return 'Historial & CSV';
-      case 'recomendaciones': return 'Recomendaciones';
-      case 'configuracion': return 'Configuración';
-      default: return 'Plataforma Principal';
+      case 'dashboard': return t('nav.dashboard');
+      case 'simulador': return t('nav.simulator');
+      case 'historial': return t('nav.history');
+      case 'recomendaciones': return t('nav.recommendations');
+      case 'configuracion': return t('nav.settings');
+      default: return 'EnergiAI';
     }
   };
 
@@ -63,8 +65,24 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onOpenAuth, onGoLandi
         </div>
       </div>
 
-      {/* Derecha: Selector de Tema, Notificaciones y Autenticación */}
+      {/* Derecha: Selector de Tema, País Activo, Notificaciones y Autenticación */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+        {/* Badge de País Activo */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '6px 12px',
+          borderRadius: '20px',
+          background: 'var(--badge-success-bg)',
+          border: '1px solid var(--border-color)',
+          fontSize: '0.8rem',
+          fontWeight: 700,
+          color: 'var(--color-emerald-600)'
+        }} title={`País configurado: ${paisConfig.nombre} (${paisConfig.moneda})`}>
+          <span>{paisConfig.bandera}</span>
+          <span>{paisConfig.codigo} | {paisConfig.simboloMoneda}</span>
+        </div>
         {/* Toggle Modo Claro / Oscuro */}
         <button
           onClick={toggleTheme}
