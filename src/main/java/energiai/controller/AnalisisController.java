@@ -47,32 +47,6 @@ public class AnalisisController {
         return ResponseEntity.ok(historial);
     }
 
-    @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> obtenerDashboardStats() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) ? auth.getName() : null;
-
-        List<AnalisisEnergeticoResponse> historial = (username != null)
-                ? aiClientService.obtenerHistorialUsuario(username)
-                : aiClientService.obtenerHistorialGlobal();
-
-        long total = historial.size();
-        double consumoPromedio = total > 0 ? historial.stream().mapToDouble(a -> a != null && a.getConsumo_kwh() != null ? a.getConsumo_kwh() : 0.0).average().orElse(0.0) : 0.0;
-        double costoTotal = historial.stream().mapToDouble(a -> a != null ? a.getCosto_estimado_mensual() : 0.0).sum();
-
-        Map<String, Long> distribucion = historial.stream()
-                .collect(Collectors.groupingBy(a -> a.getCategoria() != null ? a.getCategoria() : "Moderado", Collectors.counting()));
-
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalConsultas", total);
-        stats.put("consumoPromedioKwh", Math.round(consumoPromedio * 10.0) / 10.0);
-        stats.put("costoTotalEstimado", Math.round(costoTotal * 100.0) / 100.0);
-        stats.put("distribucionCategorias", distribucion);
-        stats.put("analisisRecientes", historial);
-
-        return ResponseEntity.ok(stats);
-    }
-
     @GetMapping("/analisis/{id}")
     public ResponseEntity<AnalisisEnergeticoResponse> obtenerPorId(@PathVariable Long id) {
         AnalisisEnergeticoResponse response = aiClientService.obtenerPorId(id);
