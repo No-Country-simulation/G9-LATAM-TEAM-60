@@ -8,10 +8,11 @@ import { Navbar } from './components/Navbar';
 import { DashboardView } from './components/DashboardView';
 import { SimulationForm } from './components/SimulationForm';
 import { HistoryView } from './components/HistoryView';
+import { ConfiguracionView } from './components/ConfiguracionView';
 import { ResultsModal } from './components/ResultsModal';
 import { AuthModal } from './components/AuthModal';
 import type { AnalisisResponse } from './types';
-import { Globe, ExternalLink, Lightbulb, Settings as SettingsIcon, Lock } from 'lucide-react';
+import { Globe, ExternalLink, Lightbulb, Lock } from 'lucide-react';
 
 const AppContent: React.FC = () => {
   const { user } = useAuth();
@@ -150,28 +151,7 @@ const AppContent: React.FC = () => {
 
           {activeTab === 'configuracion' && user && (
             <div className="view-container">
-              <div className="saas-card">
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <SettingsIcon color="var(--color-cyan-500)" /> Configuración & Tarifa Base
-                </h2>
-                <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '24px' }}>
-                  Ajustes corporativos de la plataforma EnergiAI y parámetros tarifarios normados.
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '500px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>
-                      Tarifa Base Regulada (R$ / kWh)
-                    </label>
-                    <input type="text" readOnly value="R$ 0.75 / kWh" className="saas-input font-mono" />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>
-                      Entorno de Despliegue Cloud
-                    </label>
-                    <input type="text" readOnly value="Oracle Cloud Infrastructure (OCI) Enterprise" className="saas-input font-mono" />
-                  </div>
-                </div>
-              </div>
+              <ConfiguracionView />
             </div>
           )}
         </main>
@@ -195,13 +175,17 @@ const AppContent: React.FC = () => {
   );
 };
 
+import { CountryProvider } from './context/CountryContext';
+
 export default function App() {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
+        <CountryProvider>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
+        </CountryProvider>
       </ToastProvider>
     </ThemeProvider>
   );
