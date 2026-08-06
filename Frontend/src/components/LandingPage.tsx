@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Zap, ArrowRight, CheckCircle2, DollarSign, Leaf, Cpu, Sun, Moon, ChevronDown, ChevronUp, Globe, Sparkles, BarChart2, Server, Sliders, Menu, X } from 'lucide-react';
+import { Zap, ArrowRight, CheckCircle2, DollarSign, Leaf, Cpu, Sun, Moon, ChevronDown, ChevronUp, Globe, Sparkles, BarChart2, Server, Sliders, Menu, X, Check } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useCountry } from '../context/CountryContext';
+import { ENERGIA_POR_PAIS } from '../utils/country';
 import heroPreviewImg from '../assets/hero_preview_full.png';
 import ecoIllustrationImg from '../assets/eco_illustration.png';
 import aiDiagramImg from '../assets/ai_diagram.png';
@@ -12,9 +14,11 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onOpenAuth }) => {
   const { theme, toggleTheme } = useTheme();
+  const { pais, setPais, paisConfig, t } = useCountry();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [previewKwh, setPreviewKwh] = useState(280);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
   const previewCost = Math.round(previewKwh * 0.75 * 100) / 100;
 
@@ -78,6 +82,84 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
 
         {/* Acciones & Responsive Burger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Selector de País e Idioma Flotante */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+              className="btn btn-secondary"
+              style={{
+                padding: '6px 12px',
+                borderRadius: '20px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap',
+                color: 'var(--color-emerald-600)',
+                background: 'var(--badge-success-bg)',
+                border: '1px solid var(--border-color)'
+              }}
+              title="Cambiar País / Idioma"
+            >
+              <Globe size={15} color="var(--color-emerald-500)" />
+              <span>{paisConfig.bandera} {paisConfig.nombre} · {paisConfig.moneda}</span>
+              <ChevronDown size={14} />
+            </button>
+
+            {langDropdownOpen && (
+              <div className="saas-card" style={{
+                position: 'absolute',
+                top: '115%',
+                right: 0,
+                width: '220px',
+                zIndex: 100,
+                padding: '8px',
+                boxShadow: 'var(--shadow-lg)',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '12px'
+              }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '6px 10px', marginBottom: '4px' }}>
+                  {t('country.select')}
+                </div>
+                {Object.values(ENERGIA_POR_PAIS).map((c) => (
+                  <button
+                    key={c.codigo}
+                    onClick={() => {
+                      setPais(c.codigo);
+                      setLangDropdownOpen(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 10px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: pais === c.codigo ? 'var(--badge-success-bg)' : 'transparent',
+                      color: pais === c.codigo ? 'var(--color-emerald-600)' : 'var(--text-primary)',
+                      fontWeight: pais === c.codigo ? 700 : 500,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>{c.bandera}</span>
+                      <span>{c.nombre}</span>
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '0.75rem', opacity: 0.8 }} className="font-mono">{c.moneda}</span>
+                      {pais === c.codigo && <Check size={14} color="var(--color-emerald-500)" />}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <button
             onClick={toggleTheme}
             className="btn btn-secondary"
@@ -88,7 +170,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
           </button>
 
           <button onClick={onOpenAuth} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
-            Iniciar Sesión
+            {t('auth.login')}
           </button>
 
           {/* Botón Menú Mobile */}
@@ -111,6 +193,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
           <a href="#beneficios" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Beneficios</a>
           <a href="#tecnologias" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Tecnología</a>
           <a href="#faq" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>FAQ</a>
+          
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
+              {t('country.select')}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              {Object.values(ENERGIA_POR_PAIS).map((c) => (
+                <button
+                  key={c.codigo}
+                  onClick={() => {
+                    setPais(c.codigo);
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-color)',
+                    background: pais === c.codigo ? 'var(--badge-success-bg)' : 'var(--bg-surface)',
+                    color: pais === c.codigo ? 'var(--color-emerald-600)' : 'var(--text-primary)',
+                    fontWeight: pais === c.codigo ? 700 : 500,
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <span>{c.bandera}</span>
+                  <span>{c.nombre}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -126,7 +242,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
         </h1>
 
         <p className="hero-subtitle" style={{ fontSize: '1.15rem', color: 'var(--text-secondary)', maxWidth: '740px', margin: '0 auto 32px', lineHeight: 1.6 }}>
-          Optimiza la gestión eléctrica residencial e industrial mediante modelos analíticos de <strong>Scikit-Learn</strong> e indicadores financieros a tarifa normada de R$ 0.75/kWh.
+          Optimiza la gestión eléctrica residencial e industrial mediante modelos analíticos de <strong>Scikit-Learn</strong> e indicadores financieros adaptados a <strong>{paisConfig.nombre} ({paisConfig.moneda})</strong>.
         </p>
 
         <div className="btn-group-responsive" style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginBottom: '40px' }}>
@@ -160,7 +276,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
             zIndex: 10
           }}>
             <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-emerald-500)', textTransform: 'uppercase', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Sliders size={13} /> Tarifa Interactivas en Tiempo Real
+              <Sliders size={13} /> Tarifa Interactiva en Tiempo Real
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Consumo:</span>
@@ -258,7 +374,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
             <div className="font-mono" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-amber-500)', opacity: 0.3, marginBottom: '6px' }}>03</div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px' }}>Dictamen y Plan de Ahorro</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-              Recibe el desglose financiero en R$, nivel de confianza y recomendaciones personalizadas para optimizar tus hábitos eléctricos.
+              Recibe el desglose financiero en {paisConfig.moneda}, nivel de confianza y recomendaciones personalizadas para optimizar tus hábitos eléctricos.
             </p>
           </div>
         </div>
@@ -282,7 +398,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> Reducción proyectada de hasta 24% en la factura eléctrica.</li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> Prevención de penalizaciones por sobreconsumo en horario punta.</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> Monitoreo constante a tarifa normada de R$ 0.75/kWh.</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-emerald-500)" /> Monitoreo constante en {paisConfig.moneda}.</li>
               </ul>
             </div>
 
@@ -294,7 +410,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartSimulation, onO
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> Disminución de la huella de carbono individual y corporativa.</li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> Fomento de hábitos de consumo responsable alineados a ESG.</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> Alivio de la carga operativa sobre la red eléctrica LATAM.</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={15} color="var(--color-cyan-500)" /> Alivio de la carga operativa sobre la red eléctrica en {paisConfig.nombre}.</li>
               </ul>
             </div>
           </div>
