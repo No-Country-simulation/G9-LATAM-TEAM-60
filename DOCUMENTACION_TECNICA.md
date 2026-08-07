@@ -410,14 +410,13 @@ EnergiAI implementa una arquitectura de **microservicios con tres componentes pr
 
 ### 7.5 Base de Datos
 
-Tres migraciones Flyway:
+Dos migraciones Flyway:
 - **V1**: Creación de tabla `users` con datos de admin y demo precargados.
-- **V2**: Creación de tablas `analisis_energetico` y `analisis_recomendaciones`.
-- **V3**: Inserción de 4 análisis de muestra.
+- **V2**: Creación de tablas relacionales `analisis_energetico_request` y `analisis_energetico_response`.
 
 Relaciones:
-- `analisis_energetico.user_id` → `users.id` (FK opcional, `ON DELETE SET NULL`)
-- `analisis_recomendaciones.analisis_id` → `analisis_energetico.id` (FK con `ON DELETE CASCADE`)
+- `analisis_energetico_request.user_id` → `users.id` (FK opcional, `ON DELETE SET NULL`)
+- `analisis_energetico_response.request_id` → `analisis_energetico_request.id` (FK de relación 1-a-1 con `ON DELETE CASCADE`)
 
 ### 7.6 Servicios Externos
 
@@ -445,7 +444,7 @@ graph TB
     end
 
     subgraph "Persistencia"
-        DB[("H2 / PostgreSQL\nanalisis_energetico\nanalisis_recomendaciones\nusers")]
+        DB[("H2 / PostgreSQL\nusers\nanalisis_energetico_request\nanalisis_energetico_response")]
     end
 
     subgraph "OCI Services"
@@ -930,29 +929,31 @@ erDiagram
         VARCHAR_50 role
     }
 
-    ANALISIS_ENERGETICO {
+    ANALISIS_ENERGETICO_REQUEST {
         BIGINT id PK
         BIGINT user_id FK
-        VARCHAR_50 identificador
-        VARCHAR_50 region
+        VARCHAR_255 identificador
+        VARCHAR_255 region
         DOUBLE consumo_kwh
         BOOLEAN uso_horario_pico
         INT cantidad_equipos
-        VARCHAR_50 tipo_inmueble
+        VARCHAR_255 tipo_inmueble
         INT horas_alto_consumo
-        VARCHAR_50 categoria
-        DOUBLE probabilidad
-        DOUBLE costo_estimado_mensual
         TIMESTAMP fecha_creacion
     }
 
-    ANALISIS_RECOMENDACIONES {
-        BIGINT analisis_id FK
-        VARCHAR_1000 recomendacion
+    ANALISIS_ENERGETICO_RESPONSE {
+        BIGINT id PK
+        BIGINT request_id FK
+        VARCHAR_255 categoria
+        DOUBLE probabilidad
+        DOUBLE costo_estimado_mensual
+        VARCHAR_2000 recomendaciones
+        TIMESTAMP fecha_creacion
     }
 
-    USERS ||--o{ ANALISIS_ENERGETICO : "realiza nullable"
-    ANALISIS_ENERGETICO ||--|{ ANALISIS_RECOMENDACIONES : "tiene"
+    USERS ||--o{ ANALISIS_ENERGETICO_REQUEST : "realiza (nullable)"
+    ANALISIS_ENERGETICO_REQUEST ||--|| ANALISIS_ENERGETICO_RESPONSE : "genera (1-a-1)"
 ```
 
 ---

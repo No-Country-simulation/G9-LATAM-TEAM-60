@@ -94,7 +94,7 @@ flowchart LR
 
     subgraph DataScience["🐍 Capa de Inteligencia Artificial (ML Service)"]
         FA["FastAPI + Uvicorn\n(Python 3.12 - Port 8000)"]
-        RF["Random Forest Pipeline\n(Scikit-Learn .joblib)"]
+        LR["Regresión Logística Pipeline\n(modelo_pipeline_log.joblib)"]
     end
 
     subgraph Database["🗄️ Capa de Persistencia"]
@@ -107,7 +107,7 @@ flowchart LR
     SB --> JPA
     JPA --> DB
     SB -->|"HTTP WebClient / RestTemplate"| FA
-    FA --> RF
+    FA --> LR
 ```
 
 ---
@@ -274,16 +274,16 @@ http://localhost:8000/docs
 
 ## 🤖 Inteligencia Artificial y Machine Learning
 
-El componente de Ciencia de Datos utiliza un algoritmo de **Random Forest Classifier** optimizado mediante búsqueda de hiperparámetros (GridSearchCV) y entrenado sobre el conjunto de datos `dataset_consumo_energia_G9_T60.csv`.
+El componente de Ciencia de Datos utiliza un modelo de **Regresión Logística (Pipeline - Scikit-Learn)** optimizado y entrenado sobre el conjunto de datos `dataset_consumo_energia_G9_T60.csv`.
 
 ```mermaid
 flowchart TD
     A["Raw Input Data\n(consumo_kwh, horas, equipos, etc.)"] --> B["Preprocesamiento y Escalado\n(StandardScaler + OneHotEncoder)"]
-    B --> C["Inferencia con Random Forest\n(modelo_pipeline_forest.joblib)"]
+    B --> C["Inferencia con Regresión Logística\n(modelo_pipeline_log.joblib)"]
     C --> D{"Categorización del Consumo"}
     D -->|"Consumo <= 200 kWh"| E["🟢 Eficiente (Probabilidad ~93%)"]
     D -->|"200 < Consumo <= 400 kWh"| F["🟡 Moderado (Probabilidad ~82%)"]
-    D -->|"Consumo > 400 kWh o Horas > 7"| G["🔴 Ineficiente (Probabilidad ~88%)"]
+    D -->|"Consumo > 400 kWh o Horas >= 7"| G["🔴 Ineficiente (Probabilidad ~89%)"]
     E --> H["Motor de Recomendaciones Contextual"]
     F --> H
     G --> H
@@ -332,7 +332,7 @@ flowchart TD
     B --> C["Selecciona región y horario pico"]
     C --> D["Envío de solicitud a /predict o /api/analisis-energetico"]
     D --> E{"¿Servicio ML disponible?"}
-    E -->|"Sí"| F["Ejecuta inferencia Random Forest en FastAPI"]
+    E -->|"Sí"| F["Ejecuta inferencia Regresión Logística en FastAPI"]
     E -->|"No (Offline)"| G["Ejecuta motor de reglas local resiliente"]
     F --> H["Genera dictamen, probabilidad y recomendaciones"]
     G --> H
