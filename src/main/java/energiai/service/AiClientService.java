@@ -2,9 +2,11 @@ package energiai.service;
 
 import energiai.dto.AnalisisEnergeticoRequest;
 import energiai.dto.AnalisisEnergeticoResponse;
-import energiai.model.Analisis;
+import energiai.model.AnalisisEnergeticoRequestEntity;
+import energiai.model.AnalisisEnergeticoResponseEntity;
 import energiai.model.Users;
-import energiai.repository.AnalisisRepository;
+import energiai.repository.AnalisisRequestRepository;
+import energiai.repository.AnalisisResponseRepository;
 import energiai.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -21,10 +23,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Servicio encargado de la orquestación del análisis energético:
- * 1. Comunicación HTTP con el microservicio de IA (Python FastAPI / Scikit-Learn).
- * 2. Fallback resiliente en caso de fallo del microservicio de IA.
- * 3. Persistencia de diagnósticos vinculados a usuarios en la base de datos H2.
+ * Servicio orquestador del Análisis Energético:
+ * Flujo estricto: Request (guardado en DB) -> Inferencia IA (Regresión Logística / Fallback) -> Response (guardado en DB vinculado por FK) -> Recomendaciones
  */
 @Service
 public class AiClientService {
@@ -33,12 +33,17 @@ public class AiClientService {
     private String mlServiceUrl;
 
     private final RestTemplate restTemplate;
-    private final AnalisisRepository analisisRepository;
+    private final AnalisisRequestRepository analisisRequestRepository;
+    private final AnalisisResponseRepository analisisResponseRepository;
     private final UserRepository userRepository;
 
-    public AiClientService(RestTemplate restTemplate, AnalisisRepository analisisRepository, UserRepository userRepository) {
+    public AiClientService(RestTemplate restTemplate,
+                           AnalisisRequestRepository analisisRequestRepository,
+                           AnalisisResponseRepository analisisResponseRepository,
+                           UserRepository userRepository) {
         this.restTemplate = restTemplate;
-        this.analisisRepository = analisisRepository;
+        this.analisisRequestRepository = analisisRequestRepository;
+        this.analisisResponseRepository = analisisResponseRepository;
         this.userRepository = userRepository;
     }
 
@@ -47,8 +52,31 @@ public class AiClientService {
     }
 
     public AnalisisEnergeticoResponse obtenerAnalisis(AnalisisEnergeticoRequest request, String username) {
-        AnalisisEnergeticoResponse responseDto;
+        // 1. Guardar la entrada en la tabla analisis_energetico_request
+        AnalisisEnergeticoRequestEntity requestEntity = new AnalisisEnergeticoRequestEntity();
+        if (username != null) {
+            Users user = (Users) userRepository.findByUsername(username);
+            requestEntity.setUser(user);
+        }
+        String identificador = "IA-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        requestEntity.setIdentificador(identificador);
+        String regionBase = (request.getRegion() != null ? request.getRegion() : "Centro").split("\\(")[0].trim();
+        if (!List.of("Norte", "Centro", "Sur").contains(regionBase)) {
+            regionBase = "Centro";
+        }
+        request.setRegion(regionBase);
+        requestEntity.setRegion(regionBase);
+        requestEntity.setConsumoKwh(request.getConsumo_kwh());
+        requestEntity.setUsoHorarioPico(request.isUso_horario_pico());
+        requestEntity.setCantidadEquipos(request.getCantidad_equipos());
+        requestEntity.setTipoInmueble(request.getTipo_inmueble() != null ? request.getTipo_inmueble() : "Casa");
+        requestEntity.setHorasAltoConsumo(request.getHoras_alto_consumo());
+        requestEntity.setFechaCreacion(LocalDateTime.now());
 
+        AnalisisEnergeticoRequestEntity savedRequest = analisisRequestRepository.save(requestEntity);
+
+        // 2. Comunicación con el microservicio ML (Modelo de Regresión Logística)
+        AnalisisEnergeticoResponse responseDto;
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -67,16 +95,29 @@ public class AiClientService {
                 @SuppressWarnings("unchecked")
                 List<String> recsList = (List<String>) body.getOrDefault("recomendaciones", new ArrayList<String>());
                 responseDto.setRecomendaciones(recsList);
-                responseDto.setIdentificador((String) body.getOrDefault("identificador", "IA-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase()));
-                responseDto.setFecha((String) body.getOrDefault("fecha", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+                responseDto.setIdentificador(identificador);
+                responseDto.setFecha(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             } else {
-                responseDto = generarRespuestaResiliente(request);
+                responseDto = generarRespuestaResiliente(request, identificador);
             }
         } catch (Exception e) {
             System.err.println("[WARNING] Error comunicando con microservicio ML en " + mlServiceUrl + ": " + e.getMessage());
-            responseDto = generarRespuestaResiliente(request);
+            responseDto = generarRespuestaResiliente(request, identificador);
         }
 
+        // 3. Guardar el resultado en la tabla analisis_energetico_response con la FK de la request
+        AnalisisEnergeticoResponseEntity responseEntity = new AnalisisEnergeticoResponseEntity();
+        responseEntity.setRequest(savedRequest);
+        responseEntity.setCategoria(responseDto.getCategoria());
+        responseEntity.setProbabilidad(responseDto.getProbabilidad());
+        responseEntity.setCostoEstimadoMensual(responseDto.getCosto_estimado_mensual());
+        responseEntity.setRecomendacionesList(responseDto.getRecomendaciones());
+        responseEntity.setFechaCreacion(LocalDateTime.now());
+
+        AnalisisEnergeticoResponseEntity savedResponse = analisisResponseRepository.save(responseEntity);
+
+        // 4. Poblar DTO final
+        responseDto.setId(savedResponse.getId());
         responseDto.setConsumo_kwh(request.getConsumo_kwh());
         responseDto.setTipo_inmueble(request.getTipo_inmueble());
         responseDto.setCantidad_equipos(request.getCantidad_equipos());
@@ -85,89 +126,64 @@ public class AiClientService {
         responseDto.setRegion(request.getRegion());
         responseDto.setRequest(request);
 
-        Analisis entity = new Analisis();
-        if (username != null) {
-            Users user = (Users) userRepository.findByUsername(username);
-            entity.setUser(user);
-        }
-        entity.setIdentificador(responseDto.getIdentificador() != null ? responseDto.getIdentificador() : "IA-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        entity.setRegion(request.getRegion() != null ? request.getRegion() : "Centro");
-        entity.setConsumoKwh(request.getConsumo_kwh());
-        entity.setUsoHorarioPico(request.isUso_horario_pico());
-        entity.setCantidadEquipos(request.getCantidad_equipos());
-        entity.setTipoInmueble(request.getTipo_inmueble() != null ? request.getTipo_inmueble() : "Casa");
-        entity.setHorasAltoConsumo(request.getHoras_alto_consumo());
-        entity.setCategoria(responseDto.getCategoria());
-        entity.setProbabilidad(responseDto.getProbabilidad());
-        entity.setCostoEstimadoMensual(responseDto.getCosto_estimado_mensual());
-        entity.setFechaCreacion(LocalDateTime.now());
-        entity.setRecomendaciones(responseDto.getRecomendaciones());
-
-        Analisis saved = analisisRepository.save(entity);
-        responseDto.setId(saved.getId());
-
         return responseDto;
     }
 
-    private AnalisisEnergeticoResponse generarRespuestaResiliente(AnalisisEnergeticoRequest req) {
+    private AnalisisEnergeticoResponse generarRespuestaResiliente(AnalisisEnergeticoRequest req, String identificador) {
         AnalisisEnergeticoResponse dto = new AnalisisEnergeticoResponse();
-        dto.setIdentificador("IA-R" + UUID.randomUUID().toString().substring(0, 7).toUpperCase());
+        dto.setIdentificador(identificador != null ? identificador : "IA-R" + UUID.randomUUID().toString().substring(0, 7).toUpperCase());
         dto.setFecha(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         double costo = Math.round(req.getConsumo_kwh() * 0.75 * 100.0) / 100.0;
         dto.setCosto_estimado_mensual(costo);
 
-        // --- Sistema de puntaje multi-factor (réplica del modelo ML Python) ---
-        double score = 0.0;
-
-        // Factor 1: Consumo kWh (~40%)
-        double consumo = req.getConsumo_kwh();
-        if (consumo > 500) score += 40;
-        else if (consumo > 350) score += 30;
-        else if (consumo > 200) score += 20;
-        else if (consumo > 120) score += 10;
-
-        // Factor 2: Horas de alto consumo (~25%)
-        int horas = req.getHoras_alto_consumo();
-        if (horas >= 10) score += 25;
-        else if (horas >= 7) score += 18;
-        else if (horas >= 5) score += 12;
-        else if (horas >= 3) score += 6;
-
-        // Factor 3: Cantidad de equipos (~15%)
-        int equipos = req.getCantidad_equipos();
-        if (equipos >= 20) score += 15;
-        else if (equipos >= 12) score += 10;
-        else if (equipos >= 7) score += 6;
-        else if (equipos >= 4) score += 3;
-
-        // Factor 4: Uso horario pico (~10%)
-        if (req.isUso_horario_pico()) score += 10;
-
-        // Factor 5: Tipo de inmueble (~10%)
+        // Reglas de regresión/clasificación DataScience
+        String regionBase = (req.getRegion() != null ? req.getRegion() : "Centro").split("\\(")[0].trim();
         String tipo = req.getTipo_inmueble() != null ? req.getTipo_inmueble() : "Casa";
-        if ("Departamento".equals(tipo) && consumo > 150) score += 10;
-        else if ("Casa".equals(tipo) && consumo > 250) score += 5;
+        boolean usoPico = req.isUso_horario_pico();
+        int horas = req.getHoras_alto_consumo();
+        int equipos = req.getCantidad_equipos();
+        double consumo = req.getConsumo_kwh();
 
-        // Clasificación final resiliente
-        List<String> recs = new ArrayList<>();
-        if (req.getConsumo_kwh() > 400 || req.getHoras_alto_consumo() >= 7 || (req.getConsumo_kwh() > 300 && req.isUso_horario_pico()) || req.getCantidad_equipos() >= 15 || score >= 40) {
-            dto.setCategoria("Ineficiente");
-            dto.setProbabilidad(0.89);
-            recs.add("Alerta de consumo crítico: Desconecta electrodomésticos en modo espera y revisa la instalación eléctrica.");
-            if (req.isUso_horario_pico()) {
-                recs.add("Desplazar el uso de electrodomésticos fuera del horario pico (18:00 - 22:00).");
-            }
-        } else if (req.getConsumo_kwh() > 200 || req.getHoras_alto_consumo() >= 4 || req.getCantidad_equipos() >= 7 || score >= 18) {
-            dto.setCategoria("Moderado");
-            dto.setProbabilidad(0.82);
-            recs.add("Optimiza la iluminación cambiando bombillas tradicionales a tecnología LED.");
-            recs.add("Aprovecha la luz natural y programa termostatos o sistemas de climatización.");
+        String categoria;
+        double probabilidad;
+
+        if (consumo > 400 || horas >= 7 || (consumo > 300 && usoPico) || equipos >= 15) {
+            categoria = "Ineficiente";
+            probabilidad = 0.89;
+        } else if (consumo > 200 || horas >= 4 || equipos >= 7) {
+            categoria = "Moderado";
+            probabilidad = 0.82;
         } else {
-            dto.setCategoria("Eficiente");
-            dto.setProbabilidad(0.93);
-            recs.add("¡Felicidades! Mantienes un consumo sostenible. Sigue con tus buenos hábitos de ahorro.");
+            categoria = "Eficiente";
+            probabilidad = 0.93;
         }
+
+        dto.setCategoria(categoria);
+        dto.setProbabilidad(probabilidad);
+
+        List<String> recs = new ArrayList<>();
+        if ("Ineficiente".equals(categoria)) {
+            recs.add("Atención: Tu perfil de consumo energético se encuentra en la categoría Ineficiente.");
+            if ("Departamento".equals(tipo) && "Centro".equals(regionBase)) {
+                recs.add("Detectamos que vives en un departamento en la zona central. Revisa el aislamiento de puertas y ventanas.");
+            }
+            if (usoPico) {
+                recs.add("Registras consumo durante el horario punta (18:00 - 22:00 hs). Desplazar el uso de electrodomésticos reducirá tu costo.");
+            }
+            if (horas >= 4) {
+                recs.add("Registras un promedio elevado de horas en alto consumo. Te sugerimos utilizar temporizadores o enchufes inteligentes.");
+            }
+            if (equipos <= 5 && consumo > 250) {
+                recs.add("Tienes pocos electrodomésticos pero un consumo elevado. Es probable que algún equipo antiguo opere con baja eficiencia.");
+            }
+        } else if ("Moderado".equals(categoria)) {
+            recs.add("Tu consumo es Moderado. Estás en el promedio, pero tienes margen de mejora.");
+            if (usoPico) recs.add("Evitar el horario punta es tu principal oportunidad para migrar a la categoría Eficiente.");
+        } else {
+            recs.add("¡Excelente trabajo! Tu perfil es Eficiente. Continúa con tus buenos hábitos de ahorro.");
+        }
+
         dto.setRecomendaciones(recs);
         return dto;
     }
@@ -176,18 +192,18 @@ public class AiClientService {
         if (username == null) return new ArrayList<>();
         Users user = (Users) userRepository.findByUsername(username);
         if (user == null) return new ArrayList<>();
-        return analisisRepository.findByUserIdOrderByFechaCreacionDesc(user.getId())
+        return analisisResponseRepository.findByUserIdWithRequestOrderByFechaCreacionDesc(user.getId())
                 .stream().map(this::convertirADto).collect(Collectors.toList());
     }
 
     public List<AnalisisEnergeticoResponse> obtenerHistorialGlobal() {
-        return analisisRepository.findAllByOrderByFechaCreacionDesc()
+        return analisisResponseRepository.findAllWithRequestOrderByFechaCreacionDesc()
                 .stream().map(this::convertirADto).collect(Collectors.toList());
     }
 
     public AnalisisEnergeticoResponse obtenerPorId(Long id) {
         if (id == null) return null;
-        return analisisRepository.findById(id).map(this::convertirADto).orElse(null);
+        return analisisResponseRepository.findByIdWithRequest(id).map(this::convertirADto).orElse(null);
     }
 
     public energiai.dto.DashboardResponseDTO obtenerStatsDashboard(String username) {
@@ -201,7 +217,7 @@ public class AiClientService {
                 : 0.0;
         double costoTotal = historial.stream().mapToDouble(a -> a.getCosto_estimado_mensual()).sum();
 
-        java.util.Map<String, Long> distribucion = java.util.Map.of(
+        Map<String, Long> distribucion = Map.of(
                 "Eficiente", historial.stream().filter(h -> "Eficiente".equalsIgnoreCase(h.getCategoria())).count(),
                 "Moderado", historial.stream().filter(h -> "Moderado".equalsIgnoreCase(h.getCategoria())).count(),
                 "Ineficiente", historial.stream().filter(h -> "Ineficiente".equalsIgnoreCase(h.getCategoria())).count()
@@ -216,31 +232,34 @@ public class AiClientService {
         );
     }
 
-    private AnalisisEnergeticoResponse convertirADto(Analisis a) {
+    private AnalisisEnergeticoResponse convertirADto(AnalisisEnergeticoResponseEntity resp) {
         AnalisisEnergeticoResponse dto = new AnalisisEnergeticoResponse();
-        dto.setId(a.getId());
-        dto.setIdentificador(a.getIdentificador());
-        dto.setCategoria(a.getCategoria());
-        dto.setProbabilidad(a.getProbabilidad());
-        dto.setCosto_estimado_mensual(a.getCostoEstimadoMensual());
-        dto.setRecomendaciones(a.getRecomendaciones());
-        dto.setFecha(a.getFechaCreacion() != null ? a.getFechaCreacion().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null);
-        
-        dto.setConsumo_kwh(a.getConsumoKwh());
-        dto.setTipo_inmueble(a.getTipoInmueble());
-        dto.setCantidad_equipos(a.getCantidadEquipos());
-        dto.setUso_horario_pico(Boolean.TRUE.equals(a.getUsoHorarioPico()));
-        dto.setHoras_alto_consumo(a.getHorasAltoConsumo());
-        dto.setRegion(a.getRegion());
+        dto.setId(resp.getId());
+        dto.setCategoria(resp.getCategoria());
+        dto.setProbabilidad(resp.getProbabilidad());
+        dto.setCosto_estimado_mensual(resp.getCostoEstimadoMensual());
+        dto.setRecomendaciones(resp.getRecomendacionesList());
+        dto.setFecha(resp.getFechaCreacion() != null ? resp.getFechaCreacion().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null);
 
-        AnalisisEnergeticoRequest req = new AnalisisEnergeticoRequest();
-        req.setConsumo_kwh(a.getConsumoKwh());
-        req.setTipo_inmueble(a.getTipoInmueble());
-        req.setCantidad_equipos(a.getCantidadEquipos());
-        req.setUso_horario_pico(Boolean.TRUE.equals(a.getUsoHorarioPico()));
-        req.setHoras_alto_consumo(a.getHorasAltoConsumo());
-        req.setRegion(a.getRegion());
-        dto.setRequest(req);
+        AnalisisEnergeticoRequestEntity req = resp.getRequest();
+        if (req != null) {
+            dto.setIdentificador(req.getIdentificador());
+            dto.setConsumo_kwh(req.getConsumoKwh());
+            dto.setTipo_inmueble(req.getTipoInmueble());
+            dto.setCantidad_equipos(req.getCantidadEquipos());
+            dto.setUso_horario_pico(Boolean.TRUE.equals(req.isUsoHorarioPico()));
+            dto.setHoras_alto_consumo(req.getHorasAltoConsumo());
+            dto.setRegion(req.getRegion());
+
+            AnalisisEnergeticoRequest reqDto = new AnalisisEnergeticoRequest();
+            reqDto.setConsumo_kwh(req.getConsumoKwh());
+            reqDto.setTipo_inmueble(req.getTipoInmueble());
+            reqDto.setCantidad_equipos(req.getCantidadEquipos());
+            reqDto.setUso_horario_pico(Boolean.TRUE.equals(req.isUsoHorarioPico()));
+            reqDto.setHoras_alto_consumo(req.getHorasAltoConsumo());
+            reqDto.setRegion(req.getRegion());
+            dto.setRequest(reqDto);
+        }
 
         return dto;
     }
