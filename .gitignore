@@ -49,3 +49,8 @@ logs/
 # ==== Test / cobertura ====
 /test-output/
 .nb-gradle/
+
+.oci/
+*.pem
+*.joblib
+*.pkl
