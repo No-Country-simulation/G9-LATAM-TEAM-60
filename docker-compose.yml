@@ -1,0 +1,31 @@
+services:
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: ../ai-service.Dockerfile
+    container_name: energiai-ai-service
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    container_name: energiai-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # le decimos al backend cómo llegar al microservicio de IA
+      # DENTRO de la red de docker compose (nombre de servicio, no localhost)
+      ML_SERVICE_URL: http://ai-service:8000/predict
+      # H2 en modo archivo, persistido en un volumen para no perder datos
+      # entre reinicios del contenedor
+      DB_URL: jdbc:h2:file:/app/data/energiadb
+    volumes:
+      - backend-data:/app/data
+    depends_on:
+      - ai-service
+    restart: unless-stopped
+
+volumes:
+  backend-data:
